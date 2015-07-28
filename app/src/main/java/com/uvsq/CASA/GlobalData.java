@@ -7,7 +7,7 @@ import java.io.IOException;
 
 
 public class GlobalData {
-	
+
 	public static boolean overSpeeding = false;
 	public static String engineStatus = new String();
 	public static boolean automaticFogLights = false;
@@ -48,7 +48,62 @@ public class GlobalData {
 	public static String previousMessageArretAuPassagePieton = "";
 	public static String previousMessageNotificationPossibleCollision = "";
 	public static String presentMessageNotificationPossibleCollision = "";
-	//static String presentMessageDetectStop = "";
+	//public static String presentMessageDetectStop = "";
+
+	//**********************************************
+	//start of revision section 1
+	public static double old_VehicleSpeed = 0.0;
+	public static double old_SpeedLimit = 0.0;
+	public static double old_IntersectionDistance = 0.0;
+	public static double old_IntersectionSignalDistance = 0.0;
+	public static int old_IntersectionType = -1;
+	public static int old_DirectionSignal = -1;
+	public static double old_FogVisibilityDistance = -1.0;
+	public static int old_ObstacleType = -1;
+	public static double old_ObstacleSpeed = -1.0;
+	public static double old_ObstacleDistance = -1.0;
+	public static double old_ObstacleTimeToCollision = -1.0;
+	public static int old_DriverDisturbance = -1;
+	public static int old_IntersectionDirectionFromOktal = -10;
+	//end of revision section 1
+	//**************************************************
+
+	//**********************************************
+	//start of revision section 2
+	public static double new_VehicleSpeed = 0.0;
+	public static double new_SpeedLimit = 0.0;
+	public static double new_IntersectionDistance = 0.0;
+	public static double new_IntersectionSignalDistance = 0.0;
+	public static int new_IntersectionType = -1;
+	public static int new_DirectionSignal = -1;
+	public static double new_FogVisibilityDistance = -1.0;
+	public static int new_ObstacleType = -1;
+	public static double new_ObstacleSpeed = -1.0;
+	public static double new_ObstacleDistance = -1.0;
+	public static double new_ObstacleTimeToCollision = -1.0;
+	public static int new_DriverDisturbance = -1;
+	public static int new_IntersectionDirectionFromOktal = -10;
+	//end of revision section 2
+	//**************************************************
+
+	//**********************************************
+	//start of revision section 3
+	public static boolean changed_VehicleSpeed = false;
+	public static boolean changed_SpeedLimit = false;
+	public static boolean changed_IntersectionDistance = false;
+	public static boolean changed_IntersectionSignalDistance = false;
+	public static boolean changed_IntersectionType = false;
+	public static boolean changed_DirectionSignal = false;
+	public static boolean changed_FogVisibilityDistance = false;
+	public static boolean changed_ObstacleType = false;
+	public static boolean changed_ObstacleSpeed = false;
+	public static boolean changed_ObstacleDistance = false;
+	public static boolean changed_ObstacleTimeToCollision = false;
+	public static boolean changed_DriverDisturbance = false;
+	public static boolean changed_IntersectionDirectionFromOktal = false;
+	//end of revision section 3
+	//**************************************************
+
 
 
 	public static boolean stopMessageAlreadySent = false;
@@ -66,7 +121,7 @@ public class GlobalData {
 	public static boolean pedestrianObstacleAlertAlreadySent = false;
 	public static boolean notificationArretAuPassagePietonAlreadySent = false;
 	public static boolean notificationPossibleCollisionAlreadySent = false;
-	//static boolean stopMessageAlreadySent = false;
+	//public static boolean stopMessageAlreadySent = false;
 
 
 	public static double previousFogVisibilityDistance = 10000;
@@ -85,7 +140,7 @@ public class GlobalData {
 	public static double distance_avec_Vehicule_derriere = 0.0;
 	public static double vitesse_dans_le_brouillard = 0.0;
 
-	
+
 	//static int drivingScore = 100;
 	public static int drivingScore = 0;
 
@@ -120,40 +175,40 @@ public class GlobalData {
 	public static boolean informerConducteur_vitesseDangereuse_face_a_lobstacle = false;
 	public static boolean informerConducteur_trafficPasLibre_VoieOpposee = false;
 
-	public static JSONObject objEvent,
-	                  objEvent1, objEvent2, objEvent3, objEvent4, objEvent5, 
-					  objEvent6, objEvent7, objEvent8, objEvent9, objEvent10;
-	public static JSONObject outputEvent,
-	                  outputEvent1, outputEvent2, outputEvent3,outputEvent4, outputEvent5,
-					  outputEvent6, outputEvent7, outputEvent8,outputEvent9, outputEvent10;
+	static JSONObject objEvent,
+			objEvent1, objEvent2, objEvent3, objEvent4, objEvent5,
+			objEvent6, objEvent7, objEvent8, objEvent9, objEvent10;
+	static JSONObject outputEvent,
+			outputEvent1, outputEvent2, outputEvent3,outputEvent4, outputEvent5,
+			outputEvent6, outputEvent7, outputEvent8,outputEvent9, outputEvent10;
 
 	public static boolean informerConducteur_respecte_distance_de_securite = false;
 	public static boolean informerConducteur_echecActivation_phares_de_brouillard = false;
 	public static boolean zoneDeBrouillard = false;
-	
-	
+
+
 	//***************************
 	public static void delay() {
-	//***************************
-	  try {
-	     Thread.sleep(200);      //1000 milliseconds = 1 second
-	     } 
-	  catch (InterruptedException ie) {
-	        ie.printStackTrace();
-	      }
+		//***************************
+		try {
+			Thread.sleep(200);      //1000 milliseconds = 1 second
+		}
+		catch (InterruptedException ie) {
+			ie.printStackTrace();
+		}
 	}//end method
-	
+
 	public static void clearScreen()  {
 		for (int i = 0; i < 24; i++)
 			System.out.println();
 		//System.out.print("\u001b[2J");
 		//System.out.flush();
-		
+
 		//Runtime.getRuntime().exec("cls");
-		
+
 		//ConsoleReader r = new ConsoleReader();
 		//r.clearScreen();
-		
+
 	}
 
 	//------------------------------------------------------------
@@ -166,8 +221,8 @@ public class GlobalData {
 	    }  //end try
 	    catch(Exception e) {}  
 	    */
-	 }
-	
+	}
+
 	//---------------------------------------
 	public static void waitAndClearScreen() {
 		delay();
@@ -176,8 +231,8 @@ public class GlobalData {
 			System.out.println("Error: " + e.getMessage());
 		}
 		clearScreen();
-		
-		
+
+
 	}//end method
 	
 }//end class 
