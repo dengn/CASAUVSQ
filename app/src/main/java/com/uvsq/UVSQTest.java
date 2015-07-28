@@ -72,6 +72,7 @@ public class UVSQTest<E> {
 
 	private String getSignals(GetNSet<E> getNSet, String signal){
 		HashMap<String, String> hashMap = new HashMap<String, String>();
+		hashMap.put(signal, "");
 		Bundle bundle = getNSet.get(hashMap);
 		String value1 = bundle.getString(signal);
 		return value1;
@@ -1330,7 +1331,6 @@ public class UVSQTest<E> {
 			try {
 				HashMap<String, String> hashMap = new HashMap<>();
 				for (int i = 0; i < tableau2.length; i++)
-
 					hashMap.put(tableau2[i], valeur2[i]);
 				setSignals(getNSet, hashMap);
 				GlobalData.previousMessageAlertDangerAvecObstacle = valeur2[3];
