@@ -19,13 +19,13 @@ public class Vector {
 	    z = zz;
 	}
 	
-	public Vector(Vector parVector){
+	public Vector(com.uvsq.CASA.Vector parVector){
 		x = parVector.x;
 		y = parVector.y;
 		z = parVector.z;
 	}
 	
-	public Vector extractVector(String vectorString){
+	public com.uvsq.CASA.Vector extractVector(String vectorString){
 		String[] data = new String[3];
 		int index = 0;
 		StringTokenizer st = new StringTokenizer(vectorString, "x");
@@ -34,7 +34,7 @@ public class Vector {
 	         System.out.println(data[index]);
 	         index++;
 	     }
-	     Vector myVector = new Vector();
+	     com.uvsq.CASA.Vector myVector = new com.uvsq.CASA.Vector();
 	     myVector.x = Double.valueOf(data[0]);
 	     myVector.y = Double.valueOf(data[1]);
 	     myVector.z = Double.valueOf(data[2]);

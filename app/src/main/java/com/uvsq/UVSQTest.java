@@ -2,6 +2,7 @@ package com.uvsq;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.uvsq.CASA.DetectParameterChange;
 import com.uvsq.CASA.EventCondition;
@@ -12,6 +13,8 @@ import com.uvsq.connect2datanex.GetNSet;
 
 import java.util.Date;
 import java.util.HashMap;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by etudiant on 28/07/2015.
@@ -183,6 +186,11 @@ public class UVSQTest<E> {
             value[i] = "FALSE";
         value[11] = "ON";
         Historique.nombre_infractionSurvitesse++;
+
+        //Log.i(Util.TAG, Util.writeLog("processExcessiveSpeed", value));
+
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processExcessiveSpeed", value)));
+
         sendMessageToServer(getNSet);
         currentID = 1;
     }//end method
@@ -212,6 +220,9 @@ public class UVSQTest<E> {
         value[11] = "ON";
         Historique.nombre_infractionSurvitesse++;
         sendMessageToServer(getNSet);
+
+        //Log.i(Util.TAG, Util.writeLog("processDangerousSpeed", value));
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processDangerousSpeed", value)));
         currentID = 1;
     }//end method
 
@@ -243,6 +254,8 @@ public class UVSQTest<E> {
             value[i] = "FALSE";
         value[11] = "ON";
         sendMessageToServer(getNSet);
+        //Log.i(Util.TAG, Util.writeLog("processStopSignal", value));
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processStopSignal", value)));
         currentID = 2;
     }//end method
 
@@ -273,6 +286,8 @@ public class UVSQTest<E> {
         value[11] = "ON";
         Historique.nombre_Oubli_arreter_au_Stop++;
         sendMessageToServer(getNSet);
+        //Log.i(Util.TAG, Util.writeLog("processRunningOnStopSignalMessage", value));
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processRunningOnStopSignalMessage", value)));
         currentID = 3;
     }
 
@@ -308,6 +323,8 @@ public class UVSQTest<E> {
         value[11] = "ON";
         Historique.nombre_Oubli_clignoter_gauche++;
         sendMessageToServer(getNSet);
+        //Log.i(Util.TAG, Util.writeLog("processForgotTurningLeftSignalIndicator", value));
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processForgotTurningLeftSignalIndicator", value)));
         currentID = 4;
     }	//end method
 
@@ -325,6 +342,8 @@ public class UVSQTest<E> {
         value[11] = "ON";
         Historique.nombre_Oubli_clignoter_droite++;
         sendMessageToServer(getNSet);
+        //Log.i(Util.TAG, Util.writeLog("processForgotTurningRightSignalIndicator", value));
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processForgotTuringRightSignalIndicator", value)));
         currentID = 4;
     }	//end method
 
@@ -332,6 +351,8 @@ public class UVSQTest<E> {
     //****************************************************
     private void detectTurningDirectionIndicator(GetNSet<E> getNSet) {
         currentTime = new Date().getTime();
+
+        ////Log.i(Util.TAG, "detectTuringDirectionIndicator: "+"EventCondition.isLeftSignalOff(): "+EventCondition.isLeftSignalOff()+" currentId: "+currentID);
 
         if ((EventCondition.isLeftSignalOff()) && (currentID != 4))
             processForgotTurningLeftSignalIndicator(getNSet);
@@ -370,6 +391,8 @@ public class UVSQTest<E> {
         catch (Exception e) {}
         fogLightFlag = true;
         sendMessageToServer(getNSet);
+        //Log.i(Util.TAG, Util.writeLog("processFogMessage", value));
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processFogMessage", value)));
         currentID = 5;
     }//end method
 
@@ -426,6 +449,8 @@ public class UVSQTest<E> {
         catch (Exception e) {}
         fogLightFlag = false;
         sendMessageToServer(getNSet);
+        //Log.i(Util.TAG, Util.writeLog("processExitFoggyZone", value));
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processExitFoggyZone", value)));
         currentID = 6;
     }//end method
 
@@ -457,6 +482,8 @@ public class UVSQTest<E> {
             value[i] = "FALSE";
         value[11] = "ON";
         sendMessageToServer(getNSet);
+        //Log.i(Util.TAG, Util.writeLog("processSecurityDistanceMessageWithVehicularObstacle", value));
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processSecurityDistanceMessageWithVehicularObstacle", value)));
         currentID = 7;
 
     }//end method
@@ -487,6 +514,8 @@ public class UVSQTest<E> {
             value[i] = "FALSE";
         value[11] = "ON";
         sendMessageToServer(getNSet);
+        //Log.i(Util.TAG, Util.writeLog("processPedestrianSecurityDistanceMessage", value));
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processPedestrianSecurityDistanceMessage", value)));
         currentID = 8;
     }//end method
 
@@ -517,6 +546,8 @@ public class UVSQTest<E> {
         value[11] = "ON";
         Historique.nombre_Oubli_arreter_au_PassagePieton++;
         sendMessageToServer(getNSet);
+        //Log.i(Util.TAG, Util.writeLog("processRunningPedestrianLaneMessage", value));
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processRunningPedestrianLaneMessage", value)));
         currentID = 9;
     }//end method
 
@@ -547,6 +578,8 @@ public class UVSQTest<E> {
             value[i] = "FALSE";
         value[11] = "ON";
         sendMessageToServer(getNSet);
+        //Log.i(Util.TAG, Util.writeLog("processDriverDisturbanceMessage", value));
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processDriverDisturbanceMessage", value)));
         currentID = 10;
     }//end method
 

@@ -1,11 +1,16 @@
 package com.uvsq.CASA;
 
+import android.util.Log;
+
+import com.uvsq.CASA.GlobalData;
+import com.uvsq.Util;
+
 public class EventCondition {
 	
 	//********************************************
 	public static boolean isExcessiveSpeeding() {
 		boolean excessiveSpeeding = false;
-		boolean condition1 = (GlobalData.new_VehicleSpeed > GlobalData.new_SpeedLimit); 
+		boolean condition1 = (GlobalData.new_VehicleSpeed > GlobalData.new_SpeedLimit);
 		boolean condition2 = (GlobalData.new_VehicleSpeed <= GlobalData.new_SpeedLimit * 1.20);
 		excessiveSpeeding = (condition1 && condition2);
 		return excessiveSpeeding;
@@ -44,8 +49,14 @@ public class EventCondition {
 	//***************************************
 	public static boolean isLeftSignalOff() {
 		boolean leftSignalOff = false;
+
+
+
 		int direction = GlobalData.new_IntersectionDirectionFromOktal;
 		int directionClignotant = GlobalData.new_DirectionSignal;
+
+		//Log.i(Util.TAG, "isLeftSigalOff: "+"direction: "+direction+" directionClignotant: "+directionClignotant);
+
 		boolean condition1 = (direction == 1);
 		boolean condition2 = (directionClignotant != 1);
 		leftSignalOff = (condition1 && condition2);
@@ -57,6 +68,9 @@ public class EventCondition {
 		boolean rightSignalOff = false;
 		int direction = GlobalData.new_IntersectionDirectionFromOktal;
 		int directionClignotant = GlobalData.new_DirectionSignal;
+
+		//Log.i(Util.TAG, "isRightSignalOff: "+"direction: "+direction+" directionClignotant: "+directionClignotant);
+
 		boolean condition1 = (direction == 2);
 		boolean condition2 = (directionClignotant != -1);
 		rightSignalOff = (condition1 && condition2);
@@ -176,7 +190,7 @@ public class EventCondition {
 	public static boolean isRunningOnPedestrianLane() {
 		boolean runningOnPedestrianLane = false;
 		int obstacleType = GlobalData.new_ObstacleType;
-		double obstacleDistance = GlobalData.new_ObstacleDistance; 
+		double obstacleDistance = GlobalData.new_ObstacleDistance;
 		double speed = GlobalData.new_VehicleSpeed;
 		boolean condition1 = (obstacleType == 2);
 		boolean condition2 = (obstacleDistance >= 0) && (obstacleDistance <= 15);

@@ -1,7 +1,9 @@
 package com.uvsq.CASA;
 
 import android.os.Bundle;
+import android.util.Log;
 
+import com.uvsq.Util;
 import com.uvsq.connect2datanex.GetNSet;
 
 import java.util.HashMap;
@@ -186,6 +188,8 @@ public class GetData<E> {
         try {
             directionClignotant = Integer.valueOf(getSignals(getNSet, signal));
             // System.out.println("Direction signal: " + directionClignotant);
+
+            //Log.i(Util.TAG, "getDirectionSignal: "+"directionClignotant: "+directionClignotant);
         } //end try
         catch (Exception e) {
             System.out.println(e.getMessage());
@@ -215,7 +219,7 @@ public class GetData<E> {
     public String getLampsRearFogStatus(GetNSet<E> getNSet) {
         // ********************************************
         String lampsRearFogStatus = "";
-        
+
 
         String signal = "CASA.Nexyad.LampsRearFog";
         try {
@@ -232,7 +236,7 @@ public class GetData<E> {
     public int getLightingStatus(GetNSet<E> getNSet) {
         // *************************************
         int lightingStatus = -1;
-        
+
         String signal = "CASA.Nexyad.Lighting";
         try {
             lightingStatus = Integer.valueOf(getSignals(getNSet, signal));
@@ -247,7 +251,7 @@ public class GetData<E> {
     public int getObstacleType(GetNSet<E> getNSet) {
         // ************************************
         int obstacleType = 0;
-        
+
         String signal = "CASA.Nexyad.ObstacleType";
         try {
             obstacleType = Integer.valueOf(getSignals(getNSet, signal));
@@ -262,7 +266,7 @@ public class GetData<E> {
     public double getObstacleDistance(GetNSet<E> getNSet) {
         // *******************************************
         double obstacleDistance = 0.0;
-        
+
         String signal = "CASA.Nexyad.ObstacleDistance";
         try {
             obstacleDistance = Double.parseDouble(getSignals(getNSet, signal));
@@ -277,7 +281,7 @@ public class GetData<E> {
     public double getObstacleSpeed(GetNSet<E> getNSet) {
         // ****************************************
         double obstacleSpeed = 0.0;
-        
+
         String signal = "CASA.Nexyad.ObstacleSpeed";
         try {
             obstacleSpeed = Double.parseDouble(getSignals(getNSet, signal));
@@ -294,7 +298,7 @@ public class GetData<E> {
     public double getObstacleTimeToCollision(GetNSet<E> getNSet) {
         // **************************************************
         double obstacleTimeToCollision = -1.0;
-        
+
         String signal = "CASA.Nexyad.ObstacleTimeToCollision";
         try {
             obstacleTimeToCollision = Double.parseDouble(getSignals(getNSet, signal));
@@ -306,10 +310,10 @@ public class GetData<E> {
     }// end method
 
     // **************************************
-    public  int getLaneNumber(GetNSet<E> getNSet) {
+    public int getLaneNumber(GetNSet<E> getNSet) {
         // **************************************
         int laneNumber = -1;
-        
+
         try {
             String signal = "CASA.Nexyad.LaneNumber";
             laneNumber = Integer.valueOf(getSignals(getNSet, signal));
@@ -322,10 +326,10 @@ public class GetData<E> {
     }// end method
 
     // *********************************************
-    public  boolean getLaneChangedStatus(GetNSet<E> getNSet) {
+    public boolean getLaneChangedStatus(GetNSet<E> getNSet) {
         // *********************************************
         boolean laneChanged = false;
-        
+
         try {
             String signal = "CASA.Nexyad.LaneChanged";
             laneChanged = Boolean.valueOf(getSignals(getNSet, signal));
@@ -337,10 +341,10 @@ public class GetData<E> {
     }// end method
 
     // *********************************************
-    public  int getDriverDisturbance(GetNSet<E> getNSet) {
+    public int getDriverDisturbance(GetNSet<E> getNSet) {
         // *********************************************
         int driverDisturbance = -1;
-        
+
         try {
             String signal = "CASA.Oktal.DriverDisturbance";
             driverDisturbance = Integer.valueOf(getSignals(getNSet, signal));
@@ -352,13 +356,33 @@ public class GetData<E> {
     }// end method
 
     // ******************************************************
-    public  int getIntersectionDirectionFromOktal(GetNSet<E> getNSet) {
+    public int getIntersectionDirectionFromOktal(GetNSet<E> getNSet) {
         // ******************************************************
+        boolean left = false;
+        boolean ahead = false;
+        boolean right = false;
+
         int direction = -1;
-        
+
         try {
-            String signal = "CASA.Oktal.IntersectionDirection";
-            direction = Integer.valueOf(getSignals(getNSet, signal));
+            String signal = "CASA.Nexyad.IntersectionDirectionLeft";
+            left = Boolean.valueOf(getSignals(getNSet, signal));
+
+            signal = "CASA.Nexyad.IntersectionDirectionAhead";
+            ahead = Boolean.valueOf(getSignals(getNSet, signal));
+
+            signal = "CASA.Nexyad.IntersectionDirectionRight";
+            right = Boolean.valueOf(getSignals(getNSet, signal));
+
+            if(left)
+                direction = 1;
+            else if(ahead)
+                direction = 0;
+            else if(right)
+                direction = 2;
+            //direction = Integer.valueOf(getSignals(getNSet, signal));
+
+            //Log.i(Util.TAG, "getIntersectionDirectionFromOktal: "+direction);
         } //end try
         catch (Exception e) {
             System.out.println(e.getMessage());
@@ -375,13 +399,14 @@ public class GetData<E> {
         GlobalData.old_IntersectionSignalDistance = getIntersectionSignalDistance(getNSet);
         GlobalData.old_IntersectionType = getIntersectionType(getNSet);
         GlobalData.old_DirectionSignal = getDirectionSignal(getNSet);
+        GlobalData.old_IntersectionDirectionFromOktal = getIntersectionDirectionFromOktal(getNSet);
         GlobalData.old_FogVisibilityDistance = getFogVisibilityDistance(getNSet);
         GlobalData.old_ObstacleType = getObstacleType(getNSet);
         GlobalData.old_ObstacleSpeed = getObstacleSpeed(getNSet);
         GlobalData.old_ObstacleDistance = getObstacleDistance(getNSet);
         GlobalData.old_ObstacleTimeToCollision = getObstacleTimeToCollision(getNSet);
         GlobalData.old_DriverDisturbance = getDriverDisturbance(getNSet);
-        GlobalData.old_IntersectionDirectionFromOktal = getIntersectionDirectionFromOktal(getNSet);
+
     }//end method
 
     //********************************
@@ -393,13 +418,14 @@ public class GetData<E> {
         GlobalData.new_IntersectionSignalDistance = getIntersectionSignalDistance(getNSet);
         GlobalData.new_IntersectionType = getIntersectionType(getNSet);
         GlobalData.new_DirectionSignal = getDirectionSignal(getNSet);
+        GlobalData.new_IntersectionDirectionFromOktal = getIntersectionDirectionFromOktal(getNSet);
         GlobalData.new_FogVisibilityDistance = getFogVisibilityDistance(getNSet);
         GlobalData.new_ObstacleType = getObstacleType(getNSet);
         GlobalData.new_ObstacleSpeed = getObstacleSpeed(getNSet);
         GlobalData.new_ObstacleDistance = getObstacleDistance(getNSet);
         GlobalData.new_ObstacleTimeToCollision = getObstacleTimeToCollision(getNSet);
         GlobalData.new_DriverDisturbance = getDriverDisturbance(getNSet);
-        GlobalData.new_IntersectionDirectionFromOktal = getIntersectionDirectionFromOktal(getNSet);
+
     }//end method
 
 
@@ -411,13 +437,14 @@ public class GetData<E> {
         GlobalData.old_IntersectionSignalDistance = GlobalData.new_IntersectionSignalDistance;
         GlobalData.old_IntersectionType = GlobalData.new_IntersectionType;
         GlobalData.old_DirectionSignal = GlobalData.new_DirectionSignal;
+        GlobalData.old_IntersectionDirectionFromOktal = GlobalData.new_IntersectionDirectionFromOktal;
         GlobalData.old_FogVisibilityDistance = GlobalData.new_FogVisibilityDistance;
         GlobalData.old_ObstacleType = GlobalData.new_ObstacleType;
         GlobalData.old_ObstacleSpeed = GlobalData.new_ObstacleSpeed;
         GlobalData.old_ObstacleDistance = GlobalData.new_ObstacleDistance;
         GlobalData.old_ObstacleTimeToCollision = GlobalData.new_ObstacleTimeToCollision;
         GlobalData.old_DriverDisturbance = GlobalData.new_DriverDisturbance;
-        GlobalData.old_IntersectionDirectionFromOktal = GlobalData.new_IntersectionDirectionFromOktal;
+
     }//end method
 
 
