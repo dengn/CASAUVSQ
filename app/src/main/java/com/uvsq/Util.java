@@ -1,5 +1,8 @@
 package com.uvsq;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by etudiant on 28/07/2015.
  */
@@ -9,10 +12,17 @@ public class Util {
 
     public static String writeLog(String functionName, String[] values){
         StringBuilder result = new StringBuilder();
-        for(String str: values){
-            result.append(str).append(" ");
-        }
-        return functionName+": "+result.toString();
+//        for(String str: values){
+//            result.append(str).append(" ");
+//        }
+
+        Date cDate = new Date();
+        String fDate = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss").format(cDate);
+
+        result.append(fDate+" ");
+        result.append(values[3]+"\n");
+        //return functionName+": "+result.toString();
+        return result.toString();
     }
 
 

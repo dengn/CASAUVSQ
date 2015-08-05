@@ -16,6 +16,7 @@ import java.util.HashMap;
 
 import de.greenrobot.event.EventBus;
 
+
 /**
  * Created by etudiant on 28/07/2015.
  */
@@ -256,6 +257,7 @@ public class UVSQTest<E> {
         sendMessageToServer(getNSet);
         //Log.i(Util.TAG, Util.writeLog("processStopSignal", value));
         EventBus.getDefault().post(new MessageEvent(Util.writeLog("processStopSignal", value)));
+        currentTime +=10000;
         currentID = 2;
     }//end method
 
@@ -294,7 +296,7 @@ public class UVSQTest<E> {
     //******************************************
     private void detectStoppingAtStop(GetNSet<E> getNSet) {
         arretStopBool |= (EventCondition.isStoppingAtStop());
-        if (GlobalData.changed_IntersectionDirectionFromOktal) {
+        if (GlobalData.changed_IntersectionDirectionFromOktal && (currentTime>20000)) {
             if ((!arretStopBool) && (currentID != 3)) {
                 processRunningOnStopSignalMessage(getNSet);
             }//end if
@@ -605,9 +607,13 @@ public class UVSQTest<E> {
             detectStop(getNSet);
         //changes in direction triggers checking if driver stops on Stop signal
         if ((GlobalData.changed_IntersectionDistance) || (GlobalData.changed_VehicleSpeed))
-            detectStoppingAtStop(getNSet);
+                detectStoppingAtStop(getNSet);
+
+
         //changes in direction triggers checking if the driver has put on the direction signal indicator
-        if ((GlobalData.changed_IntersectionDirectionFromOktal) || (currentTime - initTime < 2000))
+//        if ((GlobalData.changed_IntersectionDirectionFromOktal) || (currentTime - initTime < 2000))
+//            detectTurningDirectionIndicator(getNSet);
+        if(GlobalData.changed_IntersectionDirectionFromOktal)
             detectTurningDirectionIndicator(getNSet);
         //changes in fog distance triggers detection of fog
         if (GlobalData.changed_FogVisibilityDistance) {

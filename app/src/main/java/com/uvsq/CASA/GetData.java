@@ -362,7 +362,7 @@ public class GetData<E> {
         boolean ahead = false;
         boolean right = false;
 
-        int direction = -1;
+        int direction = 0;
 
         try {
             String signal = "CASA.Nexyad.IntersectionDirectionLeft";
