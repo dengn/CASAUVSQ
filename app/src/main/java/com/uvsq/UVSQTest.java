@@ -622,11 +622,11 @@ public class UVSQTest<E> {
             detectExitFoggyZone(getNSet);
         }//end if
         //changes in obstacle type triggers detection of security distance with the obstacle
-        if (GlobalData.changed_ObstacleType) {
+        //if (GlobalData.changed_ObstacleType) {
             detectVehicularObstacleSecurityDistance(getNSet);
             detectPedestrianSecurityDistance(getNSet);
             //detectStoppingOnPedestrianLane(); //to be checked
-        }//end if
+        //}//end if
         //changes in driver disturbance indicator triggers sending message to tired driver
         if (GlobalData.changed_DriverDisturbance)
             detectDriverDisturbance(getNSet);
