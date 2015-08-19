@@ -1,14 +1,14 @@
 package com.uvsq.CASA;
 
 
-import com.uvsq.connect2datanex.GetNSet_backup;
+import com.uvsq.connect2datanex.GetNSet;
 
 public class DetectParameterChange<E> {
 
 	private GetData<E> getData = new GetData<>();
-	private GetNSet_backup<E> getNSet;
+	private GetNSet<E> getNSet;
 
-	public DetectParameterChange(GetNSet_backup<E> getNSet){
+	public DetectParameterChange(GetNSet<E> getNSet){
 		this.getNSet = getNSet;
 	}
 	

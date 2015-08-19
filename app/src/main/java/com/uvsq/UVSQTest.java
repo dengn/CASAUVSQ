@@ -8,7 +8,7 @@ import com.uvsq.CASA.EventCondition;
 import com.uvsq.CASA.GetData;
 import com.uvsq.CASA.GlobalData;
 import com.uvsq.CASA.Historique;
-import com.uvsq.connect2datanex.GetNSet_backup;
+import com.uvsq.connect2datanex.GetNSet;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -67,28 +67,28 @@ public class UVSQTest<E> {
 
 
 
-    private String getSignals(GetNSet_backup<E> getNSet, String signal){
-        HashMap<String, String> hashMap = new HashMap<String, String>();
-        hashMap.put(signal, "");
-        Bundle bundle = getNSet.get(hashMap);
+    private String getSignals(GetNSet<E> getNSet, String signal){
+        Bundle input = new Bundle();
+        input.putString(signal, "");
+        Bundle bundle = getNSet.get(input);
         String value1 = bundle.getString(signal);
         return value1;
     }
 
-    private void setSignals(GetNSet_backup<E> getNSet, HashMap<String, String> hashMap){
-        getNSet.set(hashMap);
+    private void setSignals(GetNSet<E> getNSet, Bundle bundle){
+        getNSet.set(bundle);
     }
 
 
     //***********************************
-    public void sendMessageToServer(GetNSet_backup<E> getNSet){
+    public void sendMessageToServer(GetNSet<E> getNSet){
         try {
             // messages are different, send output to the CEA server
             // -----------------------------------------------------
-            HashMap<String, String> hashMap = new HashMap<>();
+            Bundle bundle = new Bundle();
             for (int i = 0; i < table.length; i++)
-                hashMap.put(table[i], value[i]);
-            setSignals(getNSet, hashMap);
+                bundle.putString(table[i], value[i]);
+            setSignals(getNSet, bundle);
         }//end try
         catch (Exception e) {
             System.out.println(e.getMessage());
@@ -97,7 +97,7 @@ public class UVSQTest<E> {
 
 
     //**********************************
-    private void initialState(GetNSet_backup<E> getNSet) {
+    private void initialState(GetNSet<E> getNSet) {
 
         for (int i = 0; i < table.length; i++)
             value[i] = "";
@@ -109,9 +109,10 @@ public class UVSQTest<E> {
 
         try {// get message
             String data = "CASA.UVSQ.ActiveLampsLowBeamOn";
-            HashMap<String, String> hashMap = new HashMap<>();
-            hashMap.put(data, "0");
-            setSignals(getNSet, hashMap);
+
+            Bundle bundle = new Bundle();
+            bundle.putString(data, "0");
+            setSignals(getNSet, bundle);
         }
         catch (Exception e) {}
         sendMessageToServer(getNSet);
@@ -119,7 +120,7 @@ public class UVSQTest<E> {
 
 
     // ***************************************
-    private boolean engineStatusIsOn(GetNSet_backup<E> getNSet) {
+    private boolean engineStatusIsOn(GetNSet<E> getNSet) {
         // ***************************************
         boolean engineOn = false;
         String status = getData.getEngineStatus(getNSet);
@@ -131,7 +132,7 @@ public class UVSQTest<E> {
     }//end method
 
     // *************************************
-    private void startSimulation(GetNSet_backup<E> getNSet) {
+    private void startSimulation(GetNSet<E> getNSet) {
 
         for (int i = 0; i < table.length; i++)
             value[i] = "";
@@ -143,7 +144,7 @@ public class UVSQTest<E> {
 
 
     //****************************************
-    private void processEmptyMessage(GetNSet_backup<E> getNSet) {
+    private void processEmptyMessage(GetNSet<E> getNSet) {
         for (int i = 0; i < 12; i++)
             value[i] = "";
         for (int i = 7; i < 11; i++)
@@ -156,7 +157,7 @@ public class UVSQTest<E> {
 
 
     //**********************************************************
-    private void processExcessiveSpeed(double speedLimit, GetNSet_backup<E> getNSet){
+    private void processExcessiveSpeed(double speedLimit, GetNSet<E> getNSet){
         int deduction = 0;
         value[0] = "Alert";
         double speed = GlobalData.new_VehicleSpeed;
@@ -196,7 +197,7 @@ public class UVSQTest<E> {
     }//end method
 
     //**********************************************************
-    private void processDangerousSpeed(double speedLimit, GetNSet_backup<E> getNSet){
+    private void processDangerousSpeed(double speedLimit, GetNSet<E> getNSet){
         double speed = GlobalData.new_VehicleSpeed;
         int deduction = 0;
         value[0] = "Alert";
@@ -228,7 +229,7 @@ public class UVSQTest<E> {
 
 
     //***************************************
-    private void detectOverspeeding(GetNSet_backup<E> getNSet) {
+    private void detectOverspeeding(GetNSet<E> getNSet) {
         if ((EventCondition.isExcessiveSpeeding()) && (currentID != 1))
             processExcessiveSpeed(GlobalData.new_SpeedLimit, getNSet);
         if ((EventCondition.isDangerousSpeeding()) && (currentID != 1))
@@ -242,7 +243,7 @@ public class UVSQTest<E> {
     }//end method
 
     //******************************************
-    private void processStopSignal(GetNSet_backup<E> getNSet){
+    private void processStopSignal(GetNSet<E> getNSet){
         value[0] = "Notification";
         value[1] = "5";
         value[2] = "Behavior";
@@ -262,7 +263,7 @@ public class UVSQTest<E> {
 
 
     //*******************************
-    private void detectStop(GetNSet_backup<E> getNSet){
+    private void detectStop(GetNSet<E> getNSet){
         if ((EventCondition.isStopSignalDetected()) && (currentID != 2))
             processStopSignal(getNSet);
         //to avoid repetition of the same message while on the same condition
@@ -274,7 +275,7 @@ public class UVSQTest<E> {
 
 
     //*******************************************************
-    private void processRunningOnStopSignalMessage(GetNSet_backup<E> getNSet) {
+    private void processRunningOnStopSignalMessage(GetNSet<E> getNSet) {
         value[0] = "Alert";
         value[1] = "8";
         value[2] = "Behavior";
@@ -293,7 +294,7 @@ public class UVSQTest<E> {
     }
 
     //******************************************
-    private void detectStoppingAtStop(GetNSet_backup<E> getNSet) {
+    private void detectStoppingAtStop(GetNSet<E> getNSet) {
         arretStopBool |= (EventCondition.isStoppingAtStop());
         if (GlobalData.changed_IntersectionDirectionFromOktal && (currentTime>20000)) {
             if ((!arretStopBool) && (currentID != 3)) {
@@ -311,7 +312,7 @@ public class UVSQTest<E> {
 
 
     //*************************************************************
-    private void processForgotTurningLeftSignalIndicator(GetNSet_backup<E> getNSet) {
+    private void processForgotTurningLeftSignalIndicator(GetNSet<E> getNSet) {
         value[0] = "Notification";
         value[1] = "7";
         value[2] = "Behavior";
@@ -330,7 +331,7 @@ public class UVSQTest<E> {
     }	//end method
 
     //**************************************************************
-    private void processForgotTurningRightSignalIndicator(GetNSet_backup<E> getNSet) {
+    private void processForgotTurningRightSignalIndicator(GetNSet<E> getNSet) {
         value[0] = "Notification";
         value[1] = "7";
         value[2] = "Behavior";
@@ -350,7 +351,7 @@ public class UVSQTest<E> {
 
 
     //****************************************************
-    private void detectTurningDirectionIndicator(GetNSet_backup<E> getNSet) {
+    private void detectTurningDirectionIndicator(GetNSet<E> getNSet) {
         currentTime = new Date().getTime();
 
         ////Log.i(Util.TAG, "detectTuringDirectionIndicator: "+"EventCondition.isLeftSignalOff(): "+EventCondition.isLeftSignalOff()+" currentId: "+currentID);
@@ -371,7 +372,7 @@ public class UVSQTest<E> {
 
 
     //**************************************
-    private void processFogMessage(GetNSet_backup<E> getNSet){
+    private void processFogMessage(GetNSet<E> getNSet){
         value[0] = "Alert";
         value[1] = "8";
         value[2] = "Danger";
@@ -385,9 +386,9 @@ public class UVSQTest<E> {
         //value[7] = "2";
         try {// get message
             String data = "CASA.UVSQ.ActiveLampsLowBeamOn";
-            HashMap<String, String> hashMap = new HashMap<>();
-            hashMap.put(data, "2");
-            setSignals(getNSet, hashMap);
+            Bundle bundle = new Bundle();
+            bundle.putString(data, "2");
+            setSignals(getNSet, bundle);
         }
         catch (Exception e) {}
         fogLightFlag = true;
@@ -399,7 +400,7 @@ public class UVSQTest<E> {
 
 
     //***********************************
-    private void detectFoggyZone(GetNSet_backup<E> getNSet){
+    private void detectFoggyZone(GetNSet<E> getNSet){
         if ((EventCondition.isStartOfFoggyZone()) && (!fogLightFlag) && (currentID !=5))
             processFogMessage(getNSet);
         //to avoid repetition of the same message while on the same condition
@@ -411,7 +412,7 @@ public class UVSQTest<E> {
 
 
     //***************************************************
-    private void detectVehicleSpeedInFoggyZone(GetNSet_backup<E> getNSet) {
+    private void detectVehicleSpeedInFoggyZone(GetNSet<E> getNSet) {
         double speedLimit = 50;
         if (EventCondition.isWithinFoggyZone()) {
             if ((EventCondition.isExcessiveSpeedingInFoggyZone()) && (currentID != 1))
@@ -428,7 +429,7 @@ public class UVSQTest<E> {
 
 
     //******************************************
-    private void processExitFoggyZone(GetNSet_backup<E> getNSet) {
+    private void processExitFoggyZone(GetNSet<E> getNSet) {
 
         value[0] = "Notification";
         value[1] = "5";
@@ -443,9 +444,10 @@ public class UVSQTest<E> {
 
         try {// get message
             String data = "CASA.UVSQ.ActiveLampsLowBeamOn";
-            HashMap<String, String> hashMap = new HashMap<>();
-            hashMap.put(data, "0");
-            setSignals(getNSet, hashMap);
+
+            Bundle bundle = new Bundle();
+            bundle.putString(data, "0");
+            setSignals(getNSet, bundle);
         }
         catch (Exception e) {}
         fogLightFlag = false;
@@ -457,7 +459,7 @@ public class UVSQTest<E> {
 
 
     //*****************************************
-    private void detectExitFoggyZone(GetNSet_backup<E> getNSet) {
+    private void detectExitFoggyZone(GetNSet<E> getNSet) {
         if ((EventCondition.isleavingFoggyZone()) && (currentID != 6))
             processExitFoggyZone(getNSet);
         //to avoid repetition of the same message while on the same condition
@@ -469,7 +471,7 @@ public class UVSQTest<E> {
 
 
     //*************************************************************************
-    private void processSecurityDistanceMessageWithVehicularObstacle(GetNSet_backup<E> getNSet) {
+    private void processSecurityDistanceMessageWithVehicularObstacle(GetNSet<E> getNSet) {
         value[0] = "Alert";
         value[1] = "8";
         value[2] = "Danger";
@@ -490,7 +492,7 @@ public class UVSQTest<E> {
     }//end method
 
     //*****************************************************
-    private void detectVehicularObstacleSecurityDistance(GetNSet_backup<E> getNSet){
+    private void detectVehicularObstacleSecurityDistance(GetNSet<E> getNSet){
         // Alerte obstacle vehicule
         if ((EventCondition.isVehicularObstacleDistanceDangerous()) && (currentID != 7))
             processSecurityDistanceMessageWithVehicularObstacle(getNSet);
@@ -503,7 +505,7 @@ public class UVSQTest<E> {
 
 
     //*************************************************************
-    private void processPedestrianSecurityDistanceMessage(GetNSet_backup<E> getNSet) {
+    private void processPedestrianSecurityDistanceMessage(GetNSet<E> getNSet) {
         value[0] = "Alert";
         value[1] = "8";
         value[2] = "Danger";
@@ -522,7 +524,7 @@ public class UVSQTest<E> {
 
 
     //*****************************************************
-    private void detectPedestrianSecurityDistance(GetNSet_backup<E> getNSet) {
+    private void detectPedestrianSecurityDistance(GetNSet<E> getNSet) {
         if ((EventCondition.isPedestrianObstaclePresent()) && (currentID != 8))
             processPedestrianSecurityDistanceMessage(getNSet);
         //to avoid repetition of the same message while on the same condition
@@ -534,7 +536,7 @@ public class UVSQTest<E> {
 
 
     //********************************************************
-    private void processRunningPedestrianLaneMessage(GetNSet_backup<E> getNSet) {
+    private void processRunningPedestrianLaneMessage(GetNSet<E> getNSet) {
         value[0] = "Alert";
         value[1] = "8";
         value[2] = "Behavior";
@@ -554,7 +556,7 @@ public class UVSQTest<E> {
 
 
     //****************************************************
-    private void detectStoppingOnPedestrianLane(GetNSet_backup<E> getNSet) {
+    private void detectStoppingOnPedestrianLane(GetNSet<E> getNSet) {
 
         if ((EventCondition.isRunningOnPedestrianLane()) && (currentID != 9))
             processRunningPedestrianLaneMessage(getNSet);
@@ -567,7 +569,7 @@ public class UVSQTest<E> {
 
 
     //*****************************************************
-    private void processDriverDisturbanceMessage(GetNSet_backup<E> getNSet) {
+    private void processDriverDisturbanceMessage(GetNSet<E> getNSet) {
         // Danger! Driver not focused on driving
         value[1] = "Alerte";
         value[2] = "9";
@@ -586,7 +588,7 @@ public class UVSQTest<E> {
 
 
     //*********************************************
-    private void detectDriverDisturbance(GetNSet_backup<E> getNSet) {
+    private void detectDriverDisturbance(GetNSet<E> getNSet) {
         if ((EventCondition.isDriverTired()) && (currentID != 10))
             processDriverDisturbanceMessage(getNSet);
         //to avoid repetition of the same message while on the same condition
@@ -597,7 +599,7 @@ public class UVSQTest<E> {
     }//end method
 
     //*********************************
-    private void selectEvent(GetNSet_backup<E> getNSet) {
+    private void selectEvent(GetNSet<E> getNSet) {
         //changes in speed or speed limit triggers detection of over-speeding
         if ((GlobalData.changed_VehicleSpeed) || (GlobalData.changed_SpeedLimit))
             detectOverspeeding(getNSet);
@@ -641,7 +643,7 @@ public class UVSQTest<E> {
 	The method to run UVSQ Algorithm
 	 */
     public void run(){
-        GetNSet_backup<E> getNSet = new GetNSet_backup<>(e);
+        GetNSet<E> getNSet = new GetNSet<>(e);
         detectParameterChange = new DetectParameterChange<>(getNSet);
 
         while (!stopFlag) {
