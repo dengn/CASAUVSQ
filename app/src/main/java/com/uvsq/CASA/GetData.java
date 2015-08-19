@@ -1,16 +1,14 @@
 package com.uvsq.CASA;
 
 import android.os.Bundle;
-import android.util.Log;
 
-import com.uvsq.Util;
-import com.uvsq.connect2datanex.GetNSet;
+import com.uvsq.connect2datanex.GetNSet_backup;
 
 import java.util.HashMap;
 
 public class GetData<E> {
 
-    private String getSignals(GetNSet<E> getNSet, String signal) {
+    private String getSignals(GetNSet_backup<E> getNSet, String signal) {
         HashMap<String, String> hashMap = new HashMap<String, String>();
         hashMap.put(signal, "");
         Bundle bundle = getNSet.get(hashMap);
@@ -18,12 +16,12 @@ public class GetData<E> {
         return value1;
     }
 
-    private void setSignals(GetNSet<E> getNSet, HashMap<String, String> hashMap) {
+    private void setSignals(GetNSet_backup<E> getNSet, HashMap<String, String> hashMap) {
         getNSet.set(hashMap);
     }
 
     //****************************************
-    public String getEngineStatus(GetNSet<E> getNSet) {
+    public String getEngineStatus(GetNSet_backup<E> getNSet) {
         //************************************
         //This method obtains the status of the car engine (on or off) from Nextyad
         String status = "";
@@ -43,7 +41,7 @@ public class GetData<E> {
 
 
     // ***************************************
-    public double getVehicleSpeed(GetNSet<E> getNSet) {
+    public double getVehicleSpeed(GetNSet_backup<E> getNSet) {
         // ***********************************
         //This method obtains the speed of the vehicle from Nextyad
         double speed = 0.0;
@@ -63,7 +61,7 @@ public class GetData<E> {
 
 
     // *************************************
-    public double getSpeedLimit(GetNSet<E> getNSet) {
+    public double getSpeedLimit(GetNSet_backup<E> getNSet) {
         // *************************************
         //This method obtains the speed limit in a certain section of a road
         double speedLimit = 0.0;
@@ -84,7 +82,7 @@ public class GetData<E> {
 
 
     //***********************************************
-    public double getIntersectionDistance(GetNSet<E> getNSet) {
+    public double getIntersectionDistance(GetNSet_backup<E> getNSet) {
         // ******************************************
         //This method gets the distance of the vehicle from the next intersection
         double distance = 0.0;
@@ -100,7 +98,7 @@ public class GetData<E> {
 
 
     // *****************************************************
-    public double getIntersectionSignalDistance(GetNSet<E> getNSet) {
+    public double getIntersectionSignalDistance(GetNSet_backup<E> getNSet) {
         // *****************************************************
         //This method gets the distance of the vehicle to the signal sign
         //in the intersection or corner of the road
@@ -117,7 +115,7 @@ public class GetData<E> {
 
 
     // ****************************************
-    public int getIntersectionType(GetNSet<E> getNSet) {
+    public int getIntersectionType(GetNSet_backup<E> getNSet) {
         // ****************************************
         //This method obtains the type of road intersection
         int intersectionType = -1;
@@ -134,7 +132,7 @@ public class GetData<E> {
 
 
     // *****************************************
-    public boolean getDirectionLeft(GetNSet<E> getNSet) {
+    public boolean getDirectionLeft(GetNSet_backup<E> getNSet) {
         // *****************************************
         boolean directionLeft = false;
         String signal = "CASA.Nexyad.IntersectionDirectionLeft";
@@ -149,7 +147,7 @@ public class GetData<E> {
 
 
     // ******************************************
-    public boolean getDirectionRight(GetNSet<E> getNSet) {
+    public boolean getDirectionRight(GetNSet_backup<E> getNSet) {
         // ******************************************
         boolean directionRight = false;
         String signal = "CASA.Nexyad.IntersectionDirectionRight";
@@ -164,7 +162,7 @@ public class GetData<E> {
 
 
     // ******************************************
-    public boolean getDirectionAhead(GetNSet<E> getNSet) {
+    public boolean getDirectionAhead(GetNSet_backup<E> getNSet) {
         // ******************************************
         boolean directionAhead = false;
         String signal = "CASA.Nexyad.IntersectionDirectionAhead";
@@ -179,7 +177,7 @@ public class GetData<E> {
 
 
     // ***************************************
-    public int getDirectionSignal(GetNSet<E> getNSet) {
+    public int getDirectionSignal(GetNSet_backup<E> getNSet) {
         // ***************************************
         int directionClignotant = -2;
         // returns -1: right / 0: none / 1: left
@@ -199,7 +197,7 @@ public class GetData<E> {
 
 
     // ************************************************
-    public double getFogVisibilityDistance(GetNSet<E> getNSet) {
+    public double getFogVisibilityDistance(GetNSet_backup<E> getNSet) {
         // ************************************************
         double fogDistance = -1;
 
@@ -216,7 +214,7 @@ public class GetData<E> {
 
 
     // ********************************************
-    public String getLampsRearFogStatus(GetNSet<E> getNSet) {
+    public String getLampsRearFogStatus(GetNSet_backup<E> getNSet) {
         // ********************************************
         String lampsRearFogStatus = "";
 
@@ -233,7 +231,7 @@ public class GetData<E> {
     }// end method
 
     // *************************************
-    public int getLightingStatus(GetNSet<E> getNSet) {
+    public int getLightingStatus(GetNSet_backup<E> getNSet) {
         // *************************************
         int lightingStatus = -1;
 
@@ -248,7 +246,7 @@ public class GetData<E> {
     }// end method
 
     // ************************************
-    public int getObstacleType(GetNSet<E> getNSet) {
+    public int getObstacleType(GetNSet_backup<E> getNSet) {
         // ************************************
         int obstacleType = 0;
 
@@ -263,7 +261,7 @@ public class GetData<E> {
     }// end method
 
     // *******************************************
-    public double getObstacleDistance(GetNSet<E> getNSet) {
+    public double getObstacleDistance(GetNSet_backup<E> getNSet) {
         // *******************************************
         double obstacleDistance = 0.0;
 
@@ -278,7 +276,7 @@ public class GetData<E> {
     }// end method
 
     // ****************************************
-    public double getObstacleSpeed(GetNSet<E> getNSet) {
+    public double getObstacleSpeed(GetNSet_backup<E> getNSet) {
         // ****************************************
         double obstacleSpeed = 0.0;
 
@@ -295,7 +293,7 @@ public class GetData<E> {
 
 
     // **************************************************
-    public double getObstacleTimeToCollision(GetNSet<E> getNSet) {
+    public double getObstacleTimeToCollision(GetNSet_backup<E> getNSet) {
         // **************************************************
         double obstacleTimeToCollision = -1.0;
 
@@ -310,7 +308,7 @@ public class GetData<E> {
     }// end method
 
     // **************************************
-    public int getLaneNumber(GetNSet<E> getNSet) {
+    public int getLaneNumber(GetNSet_backup<E> getNSet) {
         // **************************************
         int laneNumber = -1;
 
@@ -326,7 +324,7 @@ public class GetData<E> {
     }// end method
 
     // *********************************************
-    public boolean getLaneChangedStatus(GetNSet<E> getNSet) {
+    public boolean getLaneChangedStatus(GetNSet_backup<E> getNSet) {
         // *********************************************
         boolean laneChanged = false;
 
@@ -341,12 +339,12 @@ public class GetData<E> {
     }// end method
 
     // *********************************************
-    public int getDriverDisturbance(GetNSet<E> getNSet) {
+    public int getDriverDisturbance(GetNSet_backup<E> getNSet) {
         // *********************************************
-        int driverDisturbance = -1;
+        int driverDisturbance = 0;
 
         try {
-            String signal = "CASA.Oktal.DriverDisturbance";
+            String signal = "CASA.Nexyad.DriverDisturbance";
             driverDisturbance = Integer.valueOf(getSignals(getNSet, signal));
         } //end try
         catch (Exception e) {
@@ -356,31 +354,16 @@ public class GetData<E> {
     }// end method
 
     // ******************************************************
-    public int getIntersectionDirectionFromOktal(GetNSet<E> getNSet) {
+    public int getIntersectionDirectionFromOktal(GetNSet_backup<E> getNSet) {
         // ******************************************************
-        boolean left = false;
-        boolean ahead = false;
-        boolean right = false;
+
 
         int direction = 0;
 
         try {
-            String signal = "CASA.Nexyad.IntersectionDirectionLeft";
-            left = Boolean.valueOf(getSignals(getNSet, signal));
 
-            signal = "CASA.Nexyad.IntersectionDirectionAhead";
-            ahead = Boolean.valueOf(getSignals(getNSet, signal));
-
-            signal = "CASA.Nexyad.IntersectionDirectionRight";
-            right = Boolean.valueOf(getSignals(getNSet, signal));
-
-            if(left)
-                direction = 1;
-            else if(ahead)
-                direction = 0;
-            else if(right)
-                direction = 2;
-            //direction = Integer.valueOf(getSignals(getNSet, signal));
+            String signal = "CASA.Nexyad.IntersectionDirection";
+            direction = Integer.valueOf(getSignals(getNSet, signal));
 
             //Log.i(Util.TAG, "getIntersectionDirectionFromOktal: "+direction);
         } //end try
@@ -391,7 +374,7 @@ public class GetData<E> {
     }// end method
 
     //************************************
-    public void getCurrentData(GetNSet<E> getNSet) {
+    public void getCurrentData(GetNSet_backup<E> getNSet) {
         //This method gets all parameters
         GlobalData.old_VehicleSpeed = getVehicleSpeed(getNSet);
         GlobalData.old_SpeedLimit = getSpeedLimit(getNSet);
@@ -410,7 +393,7 @@ public class GetData<E> {
     }//end method
 
     //********************************
-    public  void getNextData(GetNSet<E> getNSet) {
+    public  void getNextData(GetNSet_backup<E> getNSet) {
         //This method gets all parameters
         GlobalData.new_VehicleSpeed = getVehicleSpeed(getNSet);
         GlobalData.new_SpeedLimit = getSpeedLimit(getNSet);

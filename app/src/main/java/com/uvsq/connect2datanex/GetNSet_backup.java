@@ -1,13 +1,12 @@
 package com.uvsq.connect2datanex;
 
-import android.os.Bundle;
-import android.util.Log;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
+
+import android.os.Bundle;
+import android.util.Log;
 
 /**
  * <b>Don't change this class</b><br>
@@ -15,7 +14,7 @@ import java.util.Objects;
  * Class to get and set signals from DataNex service
  */
 
-public class GetNSet<E> {
+public class GetNSet_backup<E> {
 
 	private Method[] methods;
 
@@ -25,19 +24,25 @@ public class GetNSet<E> {
 	 * Constructor with IRemoteInterface object
 	 * @param e
 	 */
-
-	public GetNSet(Object e) {
+	
+	public GetNSet_backup(Object e) {
 		this.e = e;
 		methods = e.getClass().getMethods();
 	}
 
 
-	public Bundle get(Bundle signals) {
-
+	public Bundle get(Map<String, String> signals) {
+		Bundle signalsBundle = new Bundle();
 		for (Method method : methods) {
 			if (method.getName().equals("get")) {
 				try {
-					signals = (Bundle) method.invoke(e, new Object[]{signals});
+					for (String key : signals.keySet()) {
+						signalsBundle.putString(key, signals.get(key));
+					}
+					signalsBundle = (Bundle) method.invoke(e, signalsBundle);
+					for (String key : signals.keySet()) {
+						signals.put(key, signalsBundle.get(key).toString());
+					}
 				} catch (IllegalAccessException e) {
 					Log.e("[UVSQ]: ",
 							Arrays.toString(e.getStackTrace()) + "\n" + e.getMessage());
@@ -48,7 +53,7 @@ public class GetNSet<E> {
 					Log.e("[UVSQ]: ",
 							Arrays.toString(e.getStackTrace()) + "\n" + e.getMessage());
 				}
-				return signals;
+				return signalsBundle;
 			}
 		}
 		return new Bundle();
@@ -60,7 +65,7 @@ public class GetNSet<E> {
 	 *
 	 * @param signals
 	 */
-	public void set(Bundle signals) {
+	public void set(Map<String, String> signals) {
 		for (Method method : methods) {
 			if (method.getName().equals("set")) {
 				execute(method, signals);
@@ -69,10 +74,16 @@ public class GetNSet<E> {
 		}
 	}
 
-	private void execute(Method method, Bundle signals) {
-
+	private void execute(Method method, Map<String, String> signals) {
+		Bundle signalsBundle = new Bundle();
 		try {
-			method.invoke(e, new Object[]{signals});
+			for (String key : signals.keySet()) {
+				signalsBundle.putString(key, signals.get(key));
+			}
+			method.invoke(e, signalsBundle);
+			for (String key : signals.keySet()) {
+				signals.put(key, signalsBundle.get(key).toString());
+			}
 		} catch (IllegalAccessException e) {
 			Log.e("[UVSQ]: ",
 					Arrays.toString(e.getStackTrace()) + "\n" + e.getMessage());
