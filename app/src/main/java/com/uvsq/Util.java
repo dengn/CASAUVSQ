@@ -10,7 +10,7 @@ public class Util {
 
     public static final String TAG = "UVSQTest";
 
-    public static String writeLog(String functionName, String[] values){
+    public static String writeLog(String functionName, String values){
         StringBuilder result = new StringBuilder();
 //        for(String str: values){
 //            result.append(str).append(" ");
@@ -20,7 +20,7 @@ public class Util {
         String fDate = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss").format(cDate);
 
         result.append(fDate+" ");
-        result.append(values[3]+"\n");
+        result.append(values+"\n");
         //return functionName+": "+result.toString();
         return result.toString();
     }

@@ -8,8 +8,11 @@ import com.uvsq.CASA.EventCondition;
 import com.uvsq.CASA.GetData;
 import com.uvsq.CASA.GlobalData;
 import com.uvsq.CASA.Historique;
+import com.uvsq.CASA.Message;
 import com.uvsq.connect2datanex.GetNSet;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -28,7 +31,7 @@ public class UVSQTest<E> {
             "CASA.UVSQ.ActiveLampsRearFog", "CASA.UVSQ.ActiveLampsRearFog",
             "CASA.UVSQ.ActiveAirConditioning", "CASA.UVSQ.ActiveAirRecycling",
             "CASA.UVSQ.EngineStatus" };
-    private static String[] value = { "", "", "", "", "", "", "", "", "", "", "", "" };
+    //private static String[] value = { "", "", "", "", "", "", "", "", "", "", "", "" };
     private static boolean arretStopBool = false;
     private static long initTime = 0;
     private static long currentTime = 0;
@@ -36,6 +39,8 @@ public class UVSQTest<E> {
     private static int currentID = 0;
 
 
+    private static ArrayList<Message> myList; //arraylist to contain all active messages for priority purposes
+    private static Message myMessage;
 
     private Object e;
 
@@ -79,6 +84,35 @@ public class UVSQTest<E> {
         getNSet.set(bundle);
     }
 
+    //**********************************
+    public void initialState(GetNSet<E> getNSet) {
+
+        myMessage = new Message();
+        myList = new ArrayList<Message> ();
+
+		/*
+		for (int i = 0; i < table.length; i++)
+			value[i] = "";
+		value[5] = Integer.toString(0);
+		value[11] = "OFF";
+		*/
+        myMessage.setEmptyMessage();
+        myMessage.setDrivingScore(Integer.toString(0));
+        myMessage.setEngineStatus("OFF");
+        GlobalData.drivingScore = 0;
+        GlobalData.presentDirection = 0;
+        GlobalData.previousDirection = 0;
+
+        try {// get message
+            String data = "CASA.UVSQ.ActiveLampsLowBeamOn";
+            Bundle bundle = new Bundle();
+            bundle.putString(data, "0");
+            setSignals(getNSet, bundle);
+
+        }
+        catch (Exception e) {}
+        sendMessageToServer(getNSet);
+    }// end method
 
     //***********************************
     public void sendMessageToServer(GetNSet<E> getNSet){
@@ -86,38 +120,71 @@ public class UVSQTest<E> {
             // messages are different, send output to the CEA server
             // -----------------------------------------------------
             Bundle bundle = new Bundle();
-            for (int i = 0; i < table.length; i++)
-                bundle.putString(table[i], value[i]);
+
+            bundle.putString(table[0], myMessage.getMessageLevel());
+            bundle.putString(table[1], myMessage.getMessageLevelForce());
+            bundle.putString(table[2], myMessage.getMessageCategory());
+            bundle.putString(table[3], myMessage.getMessageValue());
+            bundle.putString(table[4], myMessage.getMessageQuestion());
+            bundle.putString(table[5], myMessage.getDrivingScore());
+            bundle.putString(table[6], myMessage.getMessageImage());
+            bundle.putString(table[7], myMessage.getActiveLampsRearFogStatus());
+            bundle.putString(table[8], myMessage.getActiveLampsRearFog2Status());
+            bundle.putString(table[9], myMessage.getActiveAirConditioningStatus());
+            bundle.putString(table[10], myMessage.getActiveAirRecyclingStatus());
+            bundle.putString(table[11], myMessage.getEngineStatus());
+
             setSignals(getNSet, bundle);
         }//end try
         catch (Exception e) {
             System.out.println(e.getMessage());
         }// end catch
+
+        //entering a foggy zone
+        if (myMessage.getMessageValue().compareTo("Low visibility. Do you want to activate fog lights ?") ==  0){
+            try {// get message
+                String data = "CASA.UVSQ.ActiveLampsLowBeamOn";
+                Bundle bundle = new Bundle();
+                bundle.putString(data, "2");
+                setSignals(getNSet, bundle);
+            }
+            catch (Exception e) {}
+            fogLightFlag = true;
+        }//end if
+
+        //leaving the foggy zone
+        if (myMessage.getMessageValue().compareTo("You are leaving the foggy zone.") ==  0){
+            try {// get message
+                String data = "CASA.UVSQ.ActiveLampsLowBeamOn";
+                Bundle bundle = new Bundle();
+                bundle.putString(data, "0");
+                setSignals(getNSet, bundle);
+            }
+            catch (Exception e) {}
+            fogLightFlag = false;
+        }//end if
     }//end method
 
 
-    //**********************************
-    private void initialState(GetNSet<E> getNSet) {
+    //****************************************
+    public void processEmptyMessage() {
+        myMessage = new Message();
+        myMessage.setEmptyMessage();
+        myMessage.setDrivingScore(Integer.toString(GlobalData.drivingScore));
+        myMessage.setActiveLampsRearFog("FALSE");
+        myMessage.setActiveLampsRearFog2("FALSE");
+        myMessage.setActiveAirConditioning("FALSE");
+        myMessage.setActiveAirRecycling("FALSE");
+        myMessage.setEngineStatus("ON");
+        //sendMessageToServer();
+        //sendMessageToArrayList(myMessage);
+    }//end method
 
-        for (int i = 0; i < table.length; i++)
-            value[i] = "";
-        value[5] = Integer.toString(0);
-        value[11] = "OFF";
-        GlobalData.drivingScore = 0;
-        GlobalData.presentDirection = 0;
-        GlobalData.previousDirection = 0;
 
-        try {// get message
-            String data = "CASA.UVSQ.ActiveLampsLowBeamOn";
-
-            Bundle bundle = new Bundle();
-            bundle.putString(data, "0");
-            setSignals(getNSet, bundle);
-        }
-        catch (Exception e) {}
-        sendMessageToServer(getNSet);
-    }// end method
-
+    //**********************************************************
+    public void sendMessageToArrayList(Message myData) {
+        myList.add(myData);
+    }//end method
 
     // ***************************************
     private boolean engineStatusIsOn(GetNSet<E> getNSet) {
@@ -134,46 +201,34 @@ public class UVSQTest<E> {
     // *************************************
     private void startSimulation(GetNSet<E> getNSet) {
 
-        for (int i = 0; i < table.length; i++)
-            value[i] = "";
-        value[5] = Integer.toString(0);
-        value[11] = "ON";
+        myMessage = new Message();
+        myMessage.setEmptyMessage();
+        myMessage.setDrivingScore(Integer.toString(0));
+        myMessage.setEngineStatus("ON");
         GlobalData.drivingScore = 0;
         sendMessageToServer(getNSet);
     }// end method
 
 
-    //****************************************
-    private void processEmptyMessage(GetNSet<E> getNSet) {
-        for (int i = 0; i < 12; i++)
-            value[i] = "";
-        for (int i = 7; i < 11; i++)
-            value[i] = "FALSE";
-        value[5] = Integer.toString(GlobalData.drivingScore);
-        value[11] = "ON";
-        //sendMessageToServer(getNSet);
-    }//end method
-
-
-
     //**********************************************************
-    private void processExcessiveSpeed(double speedLimit, GetNSet<E> getNSet){
+    private void processExcessiveSpeed(double speedLimit){
+        myMessage = new Message();
         int deduction = 0;
-        value[0] = "Alert";
+        myMessage.setMessageLevel("Alert");
         double speed = GlobalData.new_VehicleSpeed;
         // calculate level force (from 6 to 8)
         // ------------------------------------
         double temp = (speedLimit * 0.20) / 3;
         if (speed <= temp + GlobalData.new_SpeedLimit)
-            value[1] = "6";
+            myMessage.setMessageLevelForce("6");
         else if ((speed > temp + speedLimit)
                 && (speed <= 2 * temp + speedLimit))
-            value[1] = "7";
+            myMessage.setMessageLevelForce("7");
         else
-            value[1] = "8";
-        value[2] = "Behavior";
-        value[3] = "Slow down. Speed limit is " + ((int) speedLimit) + " km per hour.";
-        value[4] = "False";
+            myMessage.setMessageLevelForce("8");
+        myMessage.setMessageCategory("Behavior");
+        myMessage.setMessageValue("Slow down. Speed limit is " + ((int) speedLimit) + " km per hour.");
+        myMessage.setMessageQuestion("False");
         // compute deduction
         // -----------------------------------------------------
         if ((speed > speedLimit) && (speed <= 1.10 * speedLimit))
@@ -181,188 +236,230 @@ public class UVSQTest<E> {
         else if ((speed > 1.10 * speedLimit) && (speed <= 1.20 * speedLimit))
             deduction = 2;
         GlobalData.drivingScore -= deduction;
-        value[5] = Integer.toString(GlobalData.drivingScore);
-        value[6] = "Behavior";
-        for (int i = 7; i < 11; i++)
-            value[i] = "FALSE";
-        value[11] = "ON";
+        myMessage.setDrivingScore(Integer.toString(GlobalData.drivingScore));
+        myMessage.setMessageImage("Behavior");
+        myMessage.setActiveLampsRearFog("FALSE");
+        myMessage.setActiveLampsRearFog2("FALSE");
+        myMessage.setActiveAirConditioning("FALSE");
+        myMessage.setActiveAirRecycling("FALSE");
+        myMessage.setEngineStatus("ON");
         Historique.nombre_infractionSurvitesse++;
-
-        //Log.i(Util.TAG, Util.writeLog("processExcessiveSpeed", value));
-
-        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processExcessiveSpeed", value)));
-
-        sendMessageToServer(getNSet);
+        //sendMessageToServer();
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processExcessiveSpeed", myMessage.getMessageValue())));
+        sendMessageToArrayList(myMessage);
         currentID = 1;
     }//end method
 
+
     //**********************************************************
-    private void processDangerousSpeed(double speedLimit, GetNSet<E> getNSet){
+    private void processDangerousSpeed(double speedLimit){
+        myMessage = new Message();
         double speed = GlobalData.new_VehicleSpeed;
         int deduction = 0;
-        value[0] = "Alert";
+        myMessage.setMessageLevel("Alert");
         // calculate level force (from 9 to 10)
         // --------------------------------------------------------------
         if ((speed > speedLimit * 1.20) && (speed <= speedLimit * 1.30))
-            value[1] = "9";
+            myMessage.setMessageLevelForce("9");
         else
-            value[1] = "10";
-        value[2] = "Behavior";
-        value[3] = "Slow down. Speed limit is " + ((int) speedLimit) + " km per hour";
-        value[4] = "False";
+            myMessage.setMessageLevelForce("10");
+        myMessage.setMessageCategory("Behavior");
+        myMessage.setMessageValue("Slow down. Speed limit is " + ((int) speedLimit) + " km per hour");
+        myMessage.setMessageQuestion("False");
         // infraction
         // ---------------------------------------------------
         deduction = 3;
         GlobalData.drivingScore -= deduction;
-        value[5] = Integer.toString(GlobalData.drivingScore);
-        value[6] = "Behavior";
-        for (int i = 7; i < 11; i++)
-            value[i] = "FALSE";
-        value[11] = "ON";
+        myMessage.setDrivingScore(Integer.toString(GlobalData.drivingScore));
+        myMessage.setMessageImage("Behavior");
+        myMessage.setActiveLampsRearFog("FALSE");
+        myMessage.setActiveLampsRearFog2("FALSE");
+        myMessage.setActiveAirConditioning("FALSE");
+        myMessage.setActiveAirRecycling("FALSE");
+        myMessage.setEngineStatus("ON");
         Historique.nombre_infractionSurvitesse++;
-        sendMessageToServer(getNSet);
-
-        //Log.i(Util.TAG, Util.writeLog("processDangerousSpeed", value));
-        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processDangerousSpeed", value)));
+        //sendMessageToServer();
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processDangerousSpeed", myMessage.getMessageValue())));
+        sendMessageToArrayList(myMessage);
         currentID = 1;
     }//end method
+
 
 
     //***************************************
     private void detectOverspeeding(GetNSet<E> getNSet) {
         if ((EventCondition.isExcessiveSpeeding()) && (currentID != 1))
-            processExcessiveSpeed(GlobalData.new_SpeedLimit, getNSet);
+            processExcessiveSpeed(GlobalData.new_SpeedLimit);
         if ((EventCondition.isDangerousSpeeding()) && (currentID != 1))
-            processDangerousSpeed(GlobalData.new_SpeedLimit, getNSet);
+            processDangerousSpeed(GlobalData.new_SpeedLimit);
         //to avoid repetition of the same message while on the same condition
         if (currentID == 1) {
-            processEmptyMessage(getNSet);
+            processEmptyMessage();
             currentID = 0;
         }//end if
 
     }//end method
 
     //******************************************
-    private void processStopSignal(GetNSet<E> getNSet){
-        value[0] = "Notification";
-        value[1] = "5";
-        value[2] = "Behavior";
-        value[3] = "Get ready to stop.";
-        value[4] = "FALSE";
-        value[5] = Integer.toString(GlobalData.drivingScore);
-        value[6] = "Behavior";
-        for (int i = 7; i < 11; i++)
-            value[i] = "FALSE";
-        value[11] = "ON";
-        sendMessageToServer(getNSet);
-        //Log.i(Util.TAG, Util.writeLog("processStopSignal", value));
-        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processStopSignal", value)));
+    private void processStopSignal(){
+
+        myMessage = new Message();
+        myMessage.setMessageLevel("Notification");
+        myMessage.setMessageLevelForce("5");
+        myMessage.setMessageCategory("Behavior");
+        myMessage.setMessageValue("Get ready to stop.");
+        myMessage.setMessageQuestion("FALSE");
+        myMessage.setDrivingScore(Integer.toString(GlobalData.drivingScore));
+        myMessage.setMessageImage("Behavior");
+        myMessage.setActiveLampsRearFog("FALSE");
+        myMessage.setActiveLampsRearFog2("FALSE");
+        myMessage.setActiveAirConditioning("FALSE");
+        myMessage.setActiveAirRecycling("FALSE");
+        myMessage.setEngineStatus("ON");
+        sendMessageToArrayList(myMessage);
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processStopSignal", myMessage.getMessageValue())));
         currentTime +=10000;
         currentID = 2;
     }//end method
 
 
+
     //*******************************
     private void detectStop(GetNSet<E> getNSet){
         if ((EventCondition.isStopSignalDetected()) && (currentID != 2))
-            processStopSignal(getNSet);
+            processStopSignal();
         //to avoid repetition of the same message while on the same condition
         if (currentID == 2) {
-            processEmptyMessage(getNSet);
+            processEmptyMessage();
             currentID = 0;
         }
     }//end method
 
 
     //*******************************************************
-    private void processRunningOnStopSignalMessage(GetNSet<E> getNSet) {
-        value[0] = "Alert";
-        value[1] = "8";
-        value[2] = "Behavior";
-        value[3] = "You just run a stop";
-        value[4] = "FALSE";
-        value[5] = Integer.toString(--GlobalData.drivingScore);
-        value[6] = "Behavior";
-        for (int i = 7; i < 11; i++)
-            value[i] = "FALSE";
-        value[11] = "ON";
+    private void processRunningOnStopSignalMessage() {
+
+        myMessage = new Message();
+        myMessage.setMessageLevel("Alert");
+        myMessage.setMessageLevelForce("8");
+        myMessage.setMessageCategory("Behavior");
+        myMessage.setMessageValue("You just run a stop.");
+        myMessage.setMessageQuestion("FALSE");
+        myMessage.setDrivingScore(Integer.toString(--GlobalData.drivingScore));
+        myMessage.setMessageImage("Behavior");
+        myMessage.setActiveLampsRearFog("FALSE");
+        myMessage.setActiveLampsRearFog2("FALSE");
+        myMessage.setActiveAirConditioning("FALSE");
+        myMessage.setActiveAirRecycling("FALSE");
+        myMessage.setEngineStatus("ON");
         Historique.nombre_Oubli_arreter_au_Stop++;
-        sendMessageToServer(getNSet);
-        //Log.i(Util.TAG, Util.writeLog("processRunningOnStopSignalMessage", value));
-        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processRunningOnStopSignalMessage", value)));
+        //sendMessageToServer();
+        sendMessageToArrayList(myMessage);
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processRunningOnStopSignalMessage", myMessage.getMessageValue())));
         currentID = 3;
     }
 
     //******************************************
-    private void detectStoppingAtStop(GetNSet<E> getNSet) {
+    private void detectStoppingAtStop() {
         arretStopBool |= (EventCondition.isStoppingAtStop());
+
         if (GlobalData.changed_IntersectionDirectionFromOktal && (currentTime>20000)) {
             if ((!arretStopBool) && (currentID != 3)) {
-                processRunningOnStopSignalMessage(getNSet);
+                processRunningOnStopSignalMessage();
             }//end if
             //to avoid repetition of the same message while on the same condition
             if (currentID == 3){
-                processEmptyMessage(getNSet);
+                //processEmptyMessage();
                 currentID = 0;
             }//end if
             arretStopBool = false;
         }//end if
-
     }//end method
 
 
     //*************************************************************
-    private void processForgotTurningLeftSignalIndicator(GetNSet<E> getNSet) {
-        value[0] = "Notification";
-        value[1] = "7";
-        value[2] = "Behavior";
-        value[3] = "You forgot to turn your signal on.";
-        value[4] = "FALSE";
-        value[5] = Integer.toString(--GlobalData.drivingScore);
-        value[6] = "Behavior";
-        for (int i = 7; i < 11; i++)
-            value[i] = "FALSE";
-        value[11] = "ON";
+    private void processForgotTurningLeftSignalIndicator() {
+		/*
+		value[0] = "Notification";
+		value[1] = "7";
+		value[2] = "Behavior";
+		value[3] = "You forgot to turn your signal on.";
+		value[4] = "FALSE";
+		value[5] = Integer.toString(--GlobalData.drivingScore);
+		value[6] = "Behavior";
+		for (int i = 7; i < 11; i++)
+			value[i] = "FALSE";
+		value[11] = "ON";
+		*/
+        myMessage = new Message();
+        myMessage.setMessageLevel("Notification");
+        myMessage.setMessageLevelForce("7");
+        myMessage.setMessageCategory("Behavior");
+        myMessage.setMessageValue("You forgot to turn your signal on.");
+        myMessage.setMessageQuestion("FALSE");
+        myMessage.setDrivingScore(Integer.toString(--GlobalData.drivingScore));
+        myMessage.setMessageImage("Behavior");
+        myMessage.setActiveLampsRearFog("FALSE");
+        myMessage.setActiveLampsRearFog2("FALSE");
+        myMessage.setActiveAirConditioning("FALSE");
+        myMessage.setActiveAirRecycling("FALSE");
+        myMessage.setEngineStatus("ON");
         Historique.nombre_Oubli_clignoter_gauche++;
-        sendMessageToServer(getNSet);
-        //Log.i(Util.TAG, Util.writeLog("processForgotTurningLeftSignalIndicator", value));
-        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processForgotTurningLeftSignalIndicator", value)));
+        //sendMessageToServer();
+        sendMessageToArrayList(myMessage);
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processForgotTurningLeftSignalIndicator", myMessage.getMessageValue())));
         currentID = 4;
     }	//end method
 
     //**************************************************************
-    private void processForgotTurningRightSignalIndicator(GetNSet<E> getNSet) {
-        value[0] = "Notification";
-        value[1] = "7";
-        value[2] = "Behavior";
-        value[3] = "You forgot to turn your signal on.";
-        value[4] = "FALSE";
-        value[5] = Integer.toString(--GlobalData.drivingScore);
-        value[6] = "Behavior";
-        for (int i = 7; i < 11; i++)
-            value[i] = "FALSE";
-        value[11] = "ON";
+    private void processForgotTurningRightSignalIndicator() {
+		/*
+		value[0] = "Notification";
+		value[1] = "7";
+		value[2] = "Behavior";
+		value[3] = "You forgot to turn your signal on.";
+		value[4] = "FALSE";
+		value[5] = Integer.toString(--GlobalData.drivingScore);
+		value[6] = "Behavior";
+		for (int i = 7; i < 11; i++)
+			value[i] = "FALSE";
+		value[11] = "ON";
+		*/
+        myMessage = new Message();
+        myMessage.setMessageLevel("Notification");
+        myMessage.setMessageLevelForce("7");
+        myMessage.setMessageCategory("Behavior");
+        myMessage.setMessageValue("You forgot to turn your signal on.");
+        myMessage.setMessageQuestion("FALSE");
+        myMessage.setDrivingScore(Integer.toString(--GlobalData.drivingScore));
+        myMessage.setMessageImage("Behavior");
+        myMessage.setActiveLampsRearFog("FALSE");
+        myMessage.setActiveLampsRearFog2("FALSE");
+        myMessage.setActiveAirConditioning("FALSE");
+        myMessage.setActiveAirRecycling("FALSE");
+        myMessage.setEngineStatus("ON");
         Historique.nombre_Oubli_clignoter_droite++;
-        sendMessageToServer(getNSet);
-        //Log.i(Util.TAG, Util.writeLog("processForgotTurningRightSignalIndicator", value));
-        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processForgotTuringRightSignalIndicator", value)));
+        //sendMessageToServer();
+        sendMessageToArrayList(myMessage);
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processForgotTuringRightSignalIndicator", myMessage.getMessageValue())));
         currentID = 4;
     }	//end method
 
 
+
     //****************************************************
-    private void detectTurningDirectionIndicator(GetNSet<E> getNSet) {
+    private void detectTurningDirectionIndicator() {
         currentTime = new Date().getTime();
 
         ////Log.i(Util.TAG, "detectTuringDirectionIndicator: "+"EventCondition.isLeftSignalOff(): "+EventCondition.isLeftSignalOff()+" currentId: "+currentID);
 
         if ((EventCondition.isLeftSignalOff()) && (currentID != 4))
-            processForgotTurningLeftSignalIndicator(getNSet);
+            processForgotTurningLeftSignalIndicator();
         if ((EventCondition.isRightSignalOff()) && (currentID != 4))
-            processForgotTurningRightSignalIndicator(getNSet);
+            processForgotTurningRightSignalIndicator();
         //to avoid repetition of the same message while on the same condition
         if (currentID == 4) {
-            processEmptyMessage(getNSet);
+            processEmptyMessage();
             currentID = 0;
         }//end if
         initTime = new Date().getTime();
@@ -370,20 +467,36 @@ public class UVSQTest<E> {
     }//end method
 
 
-
     //**************************************
     private void processFogMessage(GetNSet<E> getNSet){
-        value[0] = "Alert";
-        value[1] = "8";
-        value[2] = "Danger";
-        value[3] = "Low visibility. Do you want to activate fog lights ?";
-        value[4] = "TRUE";
-        value[5] = Integer.toString(GlobalData.drivingScore);
-        value[6] = "Behavior";
-        for (int i = 7; i < 11; i++)
-            value[i] = "FALSE";
-        value[11] = "ON";
+        //GETSETHTTP http = new GETSETHTTP();
+		/*
+		value[0] = "Alert";
+		value[1] = "8";
+		value[2] = "Danger";
+		value[3] = "Low visibility. Do you want to activate fog lights ?";
+		value[4] = "TRUE";
+		value[5] = Integer.toString(GlobalData.drivingScore);
+		value[6] = "Behavior";
+		for (int i = 7; i < 11; i++)
+			value[i] = "FALSE";
+		value[11] = "ON";
+		*/
         //value[7] = "2";
+        myMessage = new Message();
+        myMessage.setMessageLevel("Alert");
+        myMessage.setMessageLevelForce("8");
+        myMessage.setMessageCategory("Danger");
+        myMessage.setMessageValue("Low visibility. Do you want to activate fog lights ?");
+        myMessage.setMessageQuestion("TRUE");
+        myMessage.setDrivingScore(Integer.toString(GlobalData.drivingScore));
+        myMessage.setMessageImage("Behavior");
+        myMessage.setActiveLampsRearFog("FALSE");
+        myMessage.setActiveLampsRearFog2("FALSE");
+        myMessage.setActiveAirConditioning("FALSE");
+        myMessage.setActiveAirRecycling("FALSE");
+        myMessage.setEngineStatus("ON");
+
         try {// get message
             String data = "CASA.UVSQ.ActiveLampsLowBeamOn";
             Bundle bundle = new Bundle();
@@ -392,11 +505,13 @@ public class UVSQTest<E> {
         }
         catch (Exception e) {}
         fogLightFlag = true;
-        sendMessageToServer(getNSet);
-        //Log.i(Util.TAG, Util.writeLog("processFogMessage", value));
-        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processFogMessage", value)));
+        //sendMessageToServer();
+        sendMessageToArrayList(myMessage);
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processFogMessage", myMessage.getMessageValue())));
         currentID = 5;
     }//end method
+
+
 
 
     //***********************************
@@ -405,7 +520,7 @@ public class UVSQTest<E> {
             processFogMessage(getNSet);
         //to avoid repetition of the same message while on the same condition
         if (currentID == 5) {
-            processEmptyMessage(getNSet);
+            processEmptyMessage();
             currentID = 0;
         }//end if
     }//end method
@@ -416,12 +531,12 @@ public class UVSQTest<E> {
         double speedLimit = 50;
         if (EventCondition.isWithinFoggyZone()) {
             if ((EventCondition.isExcessiveSpeedingInFoggyZone()) && (currentID != 1))
-                processExcessiveSpeed(speedLimit, getNSet);
+                processExcessiveSpeed(speedLimit);
             if ((EventCondition.isDangerousSpeedingInFoggyZone()) && (currentID != 1))
-                processDangerousSpeed(speedLimit, getNSet);
+                processDangerousSpeed(speedLimit);
             //to avoid repetition of the same message while on the same condition
             if (currentID == 1) {
-                processEmptyMessage(getNSet);
+                processEmptyMessage();
                 currentID = 0;
             }//end if
         }//end if
@@ -430,17 +545,32 @@ public class UVSQTest<E> {
 
     //******************************************
     private void processExitFoggyZone(GetNSet<E> getNSet) {
-
-        value[0] = "Notification";
-        value[1] = "5";
-        value[2] = "Behavior";
-        value[3] = "You're leaving the foggy zone"; // exiting foggy area
-        value[4] = "False";
-        value[5] = Integer.toString(GlobalData.drivingScore);
-        value[6] = "Behavior";
-        for (int i = 7; i < 11; i++)
-            value[i] = "FALSE";
-        value[11] = "ON";
+        //GETSETHTTP http = new GETSETHTTP();
+		/*
+		value[0] = "Notification";
+		value[1] = "5";
+		value[2] = "Behavior";
+		value[3] = "You're leaving the foggy zone"; // exiting foggy area
+		value[4] = "False";
+		value[5] = Integer.toString(GlobalData.drivingScore);
+		value[6] = "Behavior";
+		for (int i = 7; i < 11; i++)
+			value[i] = "FALSE";
+		value[11] = "ON";
+		*/
+        myMessage = new Message();
+        myMessage.setMessageLevel("Notification");
+        myMessage.setMessageLevelForce("5");
+        myMessage.setMessageCategory("Behavior");
+        myMessage.setMessageValue("You are leaving the foggy zone.");
+        myMessage.setMessageQuestion("FALSE");
+        myMessage.setDrivingScore(Integer.toString(GlobalData.drivingScore));
+        myMessage.setMessageImage("Behavior");
+        myMessage.setActiveLampsRearFog("FALSE");
+        myMessage.setActiveLampsRearFog2("FALSE");
+        myMessage.setActiveAirConditioning("FALSE");
+        myMessage.setActiveAirRecycling("FALSE");
+        myMessage.setEngineStatus("ON");
 
         try {// get message
             String data = "CASA.UVSQ.ActiveLampsLowBeamOn";
@@ -451,9 +581,9 @@ public class UVSQTest<E> {
         }
         catch (Exception e) {}
         fogLightFlag = false;
-        sendMessageToServer(getNSet);
-        //Log.i(Util.TAG, Util.writeLog("processExitFoggyZone", value));
-        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processExitFoggyZone", value)));
+        //sendMessageToServer();
+        sendMessageToArrayList(myMessage);
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processExitFoggyZone", myMessage.getMessageValue())));
         currentID = 6;
     }//end method
 
@@ -464,61 +594,94 @@ public class UVSQTest<E> {
             processExitFoggyZone(getNSet);
         //to avoid repetition of the same message while on the same condition
         if (currentID == 6) {
-            processEmptyMessage(getNSet);
+            processEmptyMessage();
             currentID = 6;
         }
     }//end method
 
 
     //*************************************************************************
-    private void processSecurityDistanceMessageWithVehicularObstacle(GetNSet<E> getNSet) {
-        value[0] = "Alert";
-        value[1] = "8";
-        value[2] = "Danger";
-        value[3] = "Slow down. Vehicle ahead.";
-        // + "" Possible collision in "
-        // + ((int) collisionTime) + " seconds.";
-        value[4] = "FALSE";
-        value[5] = Integer.toString(--GlobalData.drivingScore);
-        value[6] = "Danger";
-        for (int i = 7; i < 11; i++)
-            value[i] = "FALSE";
-        value[11] = "ON";
-        sendMessageToServer(getNSet);
-        //Log.i(Util.TAG, Util.writeLog("processSecurityDistanceMessageWithVehicularObstacle", value));
-        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processSecurityDistanceMessageWithVehicularObstacle", value)));
+    private void processSecurityDistanceMessageWithVehicularObstacle() {
+		/*
+		value[0] = "Alert";
+		value[1] = "8";
+		value[2] = "Danger";
+		value[3] = "Slow down. Vehicle ahead.";
+		// + "" Possible collision in "
+		// + ((int) collisionTime) + " seconds.";
+		value[4] = "FALSE";
+		value[5] = Integer.toString(--GlobalData.drivingScore);
+		value[6] = "Danger";
+		for (int i = 7; i < 11; i++)
+			value[i] = "FALSE";
+		value[11] = "ON";
+		*/
+        //sendMessageToServer();
+        myMessage = new Message();
+        myMessage.setMessageLevel("Alert");
+        myMessage.setMessageLevelForce("8");
+        myMessage.setMessageCategory("Danger");
+        myMessage.setMessageValue("Slow down. Vehicle ahead.");
+        myMessage.setMessageQuestion("FALSE");
+        myMessage.setDrivingScore(Integer.toString(--GlobalData.drivingScore));
+        myMessage.setMessageImage("Danger");
+        myMessage.setActiveLampsRearFog("FALSE");
+        myMessage.setActiveLampsRearFog2("FALSE");
+        myMessage.setActiveAirConditioning("FALSE");
+        myMessage.setActiveAirRecycling("FALSE");
+        myMessage.setEngineStatus("ON");
+
+        sendMessageToArrayList(myMessage);
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processSecurityDistanceMessageWithVehicularObstacle", myMessage.getMessageValue())));
         currentID = 7;
 
     }//end method
+
 
     //*****************************************************
     private void detectVehicularObstacleSecurityDistance(GetNSet<E> getNSet){
         // Alerte obstacle vehicule
         if ((EventCondition.isVehicularObstacleDistanceDangerous()) && (currentID != 7))
-            processSecurityDistanceMessageWithVehicularObstacle(getNSet);
+            processSecurityDistanceMessageWithVehicularObstacle();
         //to avoid repetition of the same message while on the same condition
         if (currentID == 7) {
-            processEmptyMessage(getNSet);
+            processEmptyMessage();
             currentID = 0;
         }//end if
     }//end method
 
 
     //*************************************************************
-    private void processPedestrianSecurityDistanceMessage(GetNSet<E> getNSet) {
-        value[0] = "Alert";
-        value[1] = "8";
-        value[2] = "Danger";
-        value[3] = "Slow down. Pedestrian ahead.";
-        value[4] = "FALSE";
-        value[5] = Integer.toString(--GlobalData.drivingScore);
-        value[6] = "Danger";
-        for (int i = 7; i < 11; i++)
-            value[i] = "FALSE";
-        value[11] = "ON";
-        sendMessageToServer(getNSet);
-        //Log.i(Util.TAG, Util.writeLog("processPedestrianSecurityDistanceMessage", value));
-        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processPedestrianSecurityDistanceMessage", value)));
+    private void processPedestrianSecurityDistanceMessage() {
+		/*
+		value[0] = "Alert";
+		value[1] = "8";
+		value[2] = "Danger";
+		value[3] = "Slow down. Pedestrian ahead.";
+		value[4] = "FALSE";
+		value[5] = Integer.toString(--GlobalData.drivingScore);
+		value[6] = "Danger";
+		for (int i = 7; i < 11; i++)
+			value[i] = "FALSE";
+		value[11] = "ON";
+		*/
+        //sendMessageToServer();
+        myMessage = new Message();
+        myMessage.setMessageLevel("Alert");
+        myMessage.setMessageLevelForce("8");
+        myMessage.setMessageCategory("Danger");
+        myMessage.setMessageValue("Slow down. Pedestrian ahead.");
+        myMessage.setMessageQuestion("FALSE");
+        myMessage.setDrivingScore(Integer.toString(--GlobalData.drivingScore));
+        myMessage.setMessageImage("Danger");
+        myMessage.setActiveLampsRearFog("FALSE");
+        myMessage.setActiveLampsRearFog2("FALSE");
+        myMessage.setActiveAirConditioning("FALSE");
+        myMessage.setActiveAirRecycling("FALSE");
+        myMessage.setEngineStatus("ON");
+
+        sendMessageToArrayList(myMessage);
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processPedestrianSecurityDistanceMessage", myMessage.getMessageValue())));
         currentID = 8;
     }//end method
 
@@ -526,74 +689,108 @@ public class UVSQTest<E> {
     //*****************************************************
     private void detectPedestrianSecurityDistance(GetNSet<E> getNSet) {
         if ((EventCondition.isPedestrianObstaclePresent()) && (currentID != 8))
-            processPedestrianSecurityDistanceMessage(getNSet);
+            processPedestrianSecurityDistanceMessage();
         //to avoid repetition of the same message while on the same condition
         if (currentID == 8) {
-            processEmptyMessage(getNSet);
+            processEmptyMessage();
             currentID = 0;
         }//end if
     }//end method
 
-
     //********************************************************
-    private void processRunningPedestrianLaneMessage(GetNSet<E> getNSet) {
-        value[0] = "Alert";
-        value[1] = "8";
-        value[2] = "Behavior";
-        value[3] = "You just run a pedestrian lane.";
-        value[4] = "FALSE";
-        value[5] = Integer.toString(--GlobalData.drivingScore);
-        value[6] = "Behavior";
-        for (int i = 7; i < 11; i++)
-            value[i] = "FALSE";
-        value[11] = "ON";
+    private void processRunningPedestrianLaneMessage() {
+		/*
+		value[0] = "Alert";
+		value[1] = "8";
+		value[2] = "Behavior";
+		value[3] = "You just run a pedestrian lane.";
+		value[4] = "FALSE";
+		value[5] = Integer.toString(--GlobalData.drivingScore);
+		value[6] = "Behavior";
+		for (int i = 7; i < 11; i++)
+			value[i] = "FALSE";
+		value[11] = "ON";
+		*/
+        myMessage = new Message();
+        myMessage.setMessageLevel("Alert");
+        myMessage.setMessageLevelForce("8");
+        myMessage.setMessageCategory("Behavior");
+        myMessage.setMessageValue("You just run a pedestrian lane.");
+        myMessage.setMessageQuestion("FALSE");
+        myMessage.setDrivingScore(Integer.toString(--GlobalData.drivingScore));
+        myMessage.setMessageImage("Behavior");
+        myMessage.setActiveLampsRearFog("FALSE");
+        myMessage.setActiveLampsRearFog2("FALSE");
+        myMessage.setActiveAirConditioning("FALSE");
+        myMessage.setActiveAirRecycling("FALSE");
+        myMessage.setEngineStatus("ON");
+
         Historique.nombre_Oubli_arreter_au_PassagePieton++;
-        sendMessageToServer(getNSet);
-        //Log.i(Util.TAG, Util.writeLog("processRunningPedestrianLaneMessage", value));
-        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processRunningPedestrianLaneMessage", value)));
+        //sendMessageToServer();
+        sendMessageToArrayList(myMessage);
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processRunningPedestrianLaneMessage", myMessage.getMessageValue())));
         currentID = 9;
     }//end method
+
 
 
     //****************************************************
     private void detectStoppingOnPedestrianLane(GetNSet<E> getNSet) {
 
         if ((EventCondition.isRunningOnPedestrianLane()) && (currentID != 9))
-            processRunningPedestrianLaneMessage(getNSet);
+            processRunningPedestrianLaneMessage();
         //to avoid repetition of the same message while on the same condition
         if (currentID == 9) {
-            processEmptyMessage(getNSet);
+            processEmptyMessage();
             currentID = 0;
         }
     }//end method
 
 
     //*****************************************************
-    private void processDriverDisturbanceMessage(GetNSet<E> getNSet) {
-        // Danger! Driver not focused on driving
-        value[1] = "Alerte";
-        value[2] = "9";
-        value[3] = "You are tired. Do you want to activate energizing mode?";
-        value[4] = "TRUE";
-        value[5] = Integer.toString(--GlobalData.drivingScore);
-        value[6] = "Ability";
-        for (int i = 7; i < 11; i++)
-            value[i] = "FALSE";
-        value[11] = "ON";
-        sendMessageToServer(getNSet);
-        //Log.i(Util.TAG, Util.writeLog("processDriverDisturbanceMessage", value));
-        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processDriverDisturbanceMessage", value)));
+    private void processDriverDisturbanceMessage() {
+		/*
+		// Danger! Driver not focused on driving
+		value[1] = "Alert";
+		value[2] = "9";
+		value[3] = "You are tired. Do you want to activate energizing mode?";
+		value[4] = "TRUE";
+		value[5] = Integer.toString(--GlobalData.drivingScore);
+		value[6] = "Ability";
+		for (int i = 7; i < 11; i++)
+			value[i] = "FALSE";
+		value[11] = "ON";
+		*/
+        myMessage = new Message();
+        myMessage.setMessageLevel("Alert");
+        myMessage.setMessageLevelForce("9");
+        myMessage.setMessageCategory("Ability");
+        myMessage.setMessageValue("You are tired. Do you want to activate energizing mode?");
+        myMessage.setMessageQuestion("TRUE");
+        myMessage.setDrivingScore(Integer.toString(--GlobalData.drivingScore));
+        myMessage.setMessageImage("Ability");
+        myMessage.setActiveLampsRearFog("FALSE");
+        myMessage.setActiveLampsRearFog2("FALSE");
+        myMessage.setActiveAirConditioning("FALSE");
+        myMessage.setActiveAirRecycling("FALSE");
+        myMessage.setEngineStatus("ON");
+
+        //sendMessageToServer();
+        sendMessageToArrayList(myMessage);
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processDriverDisturbanceMessage", myMessage.getMessageValue())));
         currentID = 10;
     }//end method
+
+
 
 
     //*********************************************
     private void detectDriverDisturbance(GetNSet<E> getNSet) {
         if ((EventCondition.isDriverTired()) && (currentID != 10))
-            processDriverDisturbanceMessage(getNSet);
+            processDriverDisturbanceMessage();
         //to avoid repetition of the same message while on the same condition
         if (currentID == 10) {
-            processEmptyMessage(getNSet);
+            processEmptyMessage();
             currentID = 0;
         }
     }//end method
@@ -621,7 +818,7 @@ public class UVSQTest<E> {
             detectStop(getNSet);
         //changes in direction triggers checking if driver stops on Stop signal
         if ((GlobalData.changed_IntersectionDistance) || (GlobalData.changed_VehicleSpeed)) {
-            detectStoppingAtStop(getNSet);
+            detectStoppingAtStop();
         }
 //        else{
 //            if(GlobalData.changed_IntersectionDirectionFromOktal)
@@ -631,7 +828,7 @@ public class UVSQTest<E> {
 
         //changes in direction triggers checking if the driver has put on the direction signal indicator
         if ((GlobalData.changed_IntersectionDirectionFromOktal) || (currentTime - initTime < 2000))
-            detectTurningDirectionIndicator(getNSet);
+            detectTurningDirectionIndicator();
 
         //changes in fog distance triggers detection of fog
         if (GlobalData.changed_FogVisibilityDistance) {
@@ -655,6 +852,24 @@ public class UVSQTest<E> {
     }//end method
 
 
+
+
+
+    //***********************************************
+    private void executeTopPriorityMessage(GetNSet<E> getNSet) {
+        Collections.sort(myList, Message.messageTypeComparator);
+        //number of elements in the list
+        int i = myList.size();
+        if (i > 0) {
+            Message temp = myList.get(0); //this one on top has the highest priority
+            myMessage = new Message();
+            myMessage = temp;
+            sendMessageToServer(getNSet);
+            myList.clear();              //clear the arrayList
+        }//end if
+
+    }//end method
+
     /*
 	The method to run UVSQ Algorithm
 	 */
@@ -673,6 +888,7 @@ public class UVSQTest<E> {
                 getData.getNextData(getNSet);
                 detectParameterChange.detectDataChange();
                 selectEvent(getNSet);
+                executeTopPriorityMessage(getNSet);
                 getData.updateAllData();
                 GlobalData.delay();
             }//end while
