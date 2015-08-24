@@ -598,6 +598,19 @@ public class UVSQTest<E> {
         }
     }//end method
 
+
+    private void processIMATIASignal(GetNSet<E> getNSet){
+        String incitation = getSignals(getNSet, "CASA.IMATIA.RemoveFoot.Incitation");
+        Bundle inputIncitation = new Bundle();
+        inputIncitation.putString("CASA.UVSQ.RemoveFoot.Incitation", incitation);
+        setSignals(getNSet, inputIncitation);
+
+        String explicitSpeedLimit = getSignals(getNSet, "CASA.IMATIA.RemoveFoot.ExplicitSpeedLimit");
+        Bundle inputExplicitSpeedLimit = new Bundle();
+        inputExplicitSpeedLimit.putString("CASA.UVSQ.RemoveFoot.ExplicitSpeedLimit", explicitSpeedLimit);
+        setSignals(getNSet, inputExplicitSpeedLimit);
+    }
+
     //*********************************
     private void selectEvent(GetNSet<E> getNSet) {
         //changes in speed or speed limit triggers detection of over-speeding
@@ -610,15 +623,15 @@ public class UVSQTest<E> {
         if ((GlobalData.changed_IntersectionDistance) || (GlobalData.changed_VehicleSpeed)) {
             detectStoppingAtStop(getNSet);
         }
-        else{
-            if(GlobalData.changed_IntersectionDirectionFromOktal)
-                detectTurningDirectionIndicator(getNSet);
-        }
+//        else{
+//            if(GlobalData.changed_IntersectionDirectionFromOktal)
+//                detectTurningDirectionIndicator(getNSet);
+//        }
 
 
         //changes in direction triggers checking if the driver has put on the direction signal indicator
-//        if ((GlobalData.changed_IntersectionDirectionFromOktal) || (currentTime - initTime < 2000))
-//            detectTurningDirectionIndicator(getNSet);
+        if ((GlobalData.changed_IntersectionDirectionFromOktal) || (currentTime - initTime < 2000))
+            detectTurningDirectionIndicator(getNSet);
 
         //changes in fog distance triggers detection of fog
         if (GlobalData.changed_FogVisibilityDistance) {
@@ -636,6 +649,9 @@ public class UVSQTest<E> {
         //changes in driver disturbance indicator triggers sending message to tired driver
         if (GlobalData.changed_DriverDisturbance)
             detectDriverDisturbance(getNSet);
+
+
+        processIMATIASignal(getNSet);
     }//end method
 
 
