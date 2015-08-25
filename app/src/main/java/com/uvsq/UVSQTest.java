@@ -47,6 +47,8 @@ public class UVSQTest<E> {
     private boolean stopFlag = false;
     private Context context;
 
+    private boolean stopDetectedFlag = false;
+
 
     private GetData<E> getData = new GetData<E>();
     private DetectParameterChange<E> detectParameterChange;
@@ -318,7 +320,7 @@ public class UVSQTest<E> {
         myMessage.setEngineStatus("ON");
         sendMessageToArrayList(myMessage);
         EventBus.getDefault().post(new MessageEvent(Util.writeLog("processStopSignal", myMessage.getMessageValue())));
-        currentTime +=10000;
+
         currentID = 2;
     }//end method
 
@@ -326,8 +328,10 @@ public class UVSQTest<E> {
 
     //*******************************
     private void detectStop(GetNSet<E> getNSet){
-        if ((EventCondition.isStopSignalDetected()) && (currentID != 2))
+        if ((EventCondition.isStopSignalDetected()) && (currentID != 2)) {
             processStopSignal();
+            stopDetectedFlag = true;
+        }
         //to avoid repetition of the same message while on the same condition
         if (currentID == 2) {
             processEmptyMessage();
@@ -363,7 +367,7 @@ public class UVSQTest<E> {
     private void detectStoppingAtStop() {
         arretStopBool |= (EventCondition.isStoppingAtStop());
 
-        if (GlobalData.changed_IntersectionDirectionFromOktal && (currentTime>20000)) {
+        if (GlobalData.changed_IntersectionDirectionFromOktal) {
             if ((!arretStopBool) && (currentID != 3)) {
                 processRunningOnStopSignalMessage();
             }//end if
@@ -817,7 +821,7 @@ public class UVSQTest<E> {
         if ((GlobalData.changed_IntersectionDistance) || (GlobalData.changed_IntersectionType))
             detectStop(getNSet);
         //changes in direction triggers checking if driver stops on Stop signal
-        if ((GlobalData.changed_IntersectionDistance) || (GlobalData.changed_VehicleSpeed)) {
+        if ((GlobalData.changed_IntersectionDistance) && (GlobalData.changed_VehicleSpeed) && stopDetectedFlag) {
             detectStoppingAtStop();
         }
 //        else{
@@ -827,7 +831,7 @@ public class UVSQTest<E> {
 
 
         //changes in direction triggers checking if the driver has put on the direction signal indicator
-        if ((GlobalData.changed_IntersectionDirectionFromOktal) || (currentTime - initTime < 2000))
+        if ((GlobalData.changed_IntersectionDirectionFromOktal))
             detectTurningDirectionIndicator();
 
         //changes in fog distance triggers detection of fog
