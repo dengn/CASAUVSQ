@@ -179,6 +179,7 @@ public class UVSQTest<E> {
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
         //sendMessageToServer();
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processEmptyMessage", myMessage.getMessageValue())));
         sendMessageToArrayList(myMessage);
     }//end method
 
