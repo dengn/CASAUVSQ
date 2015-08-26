@@ -179,7 +179,7 @@ public class UVSQTest<E> {
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
         //sendMessageToServer();
-        //sendMessageToArrayList(myMessage);
+        sendMessageToArrayList(myMessage);
     }//end method
 
 
@@ -824,10 +824,6 @@ public class UVSQTest<E> {
         if ((GlobalData.changed_IntersectionDistance) && (GlobalData.changed_VehicleSpeed) && stopDetectedFlag) {
             detectStoppingAtStop();
         }
-//        else{
-//            if(GlobalData.changed_IntersectionDirectionFromOktal)
-//                detectTurningDirectionIndicator(getNSet);
-//        }
 
 
         //changes in direction triggers checking if the driver has put on the direction signal indicator
