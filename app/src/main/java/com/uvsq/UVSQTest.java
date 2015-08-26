@@ -151,7 +151,8 @@ public class UVSQTest<E> {
             value[i] = "FALSE";
         value[5] = Integer.toString(GlobalData.drivingScore);
         value[11] = "ON";
-        //sendMessageToServer(getNSet);
+        EventBus.getDefault().post(new MessageEvent(Util.writeLog("processEmptyMessages", value)));
+        sendMessageToServer(getNSet);
     }//end method
 
 
