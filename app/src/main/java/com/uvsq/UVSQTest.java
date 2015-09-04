@@ -382,7 +382,8 @@ public class UVSQTest<E> {
 
         int deduction = 0;
         myMessage.setMessageLevel("Alert");
-        myMessage.setMessageLevel("6");
+        myMessage.setMessageLevelForce("6");
+        myMessage.setMessageCategory("Behavior");
         myMessage.setMessageValue("You are off the road.");
         myMessage.setMessageQuestion("False");
         // infraction
@@ -390,7 +391,7 @@ public class UVSQTest<E> {
         deduction = 3;
         GlobalData.drivingScore -= deduction;
         myMessage.setDrivingScore(Integer.toString(GlobalData.drivingScore));
-        myMessage.setMessageCategory("Behavior");
+        myMessage.setMessageImage("Behavior");
         myMessage.setActiveLampsRearFog("FALSE");
         myMessage.setActiveLampsRearFog2("FALSE");
         myMessage.setActiveAirConditioning("FALSE");
@@ -405,13 +406,13 @@ public class UVSQTest<E> {
     }//end method
 
 
+
     //***************************************
     private void detectOverspeeding(GetNSet<E> getNSet) {
-//        if (EventCondition.isOutOfRoad()) {
-//            processOutOfRoad(getNSet);
-//            overSpeedingDetected = true;
-//        } else
-        if ((EventCondition.isExcessiveSpeeding())) {
+        if (EventCondition.isOutOfRoad()) {
+            processOutOfRoad(getNSet);
+            overSpeedingDetected = true;
+        } else if ((EventCondition.isExcessiveSpeeding())) {
             processExcessiveSpeed(GlobalData.new_SpeedLimit, getNSet);
             overSpeedingDetected = true;
         } else if ((EventCondition.isDangerousSpeeding())) {
@@ -1076,6 +1077,11 @@ public class UVSQTest<E> {
         processIMATIASignal(getNSet);
 
         if (!(overSpeedingDetected || stopDetected || stoppingAtStopDetected || turingDirectionIndicatorDetected || foggyZoneDetected || vehicleSpeedInFoggyZoneDetected || exitFoggyZoneDetected || vehicularObstacleSecurityDistanceDetected || pedestrianSecurityDistanceDetected || driverDisturbuanceDetected)) {
+            try
+            {
+                Thread.currentThread().sleep(1800);
+            }
+            catch(Exception e){}
             processEmptyMessage(getNSet);
         }
     }//end method

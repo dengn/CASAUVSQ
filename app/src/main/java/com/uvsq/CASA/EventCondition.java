@@ -23,6 +23,14 @@ public class EventCondition {
 		dangerousSpeeding = condition1;
 		return dangerousSpeeding;
 	}//end method
+
+	public static boolean isOutOfRoad(){
+		boolean outOfRoad = false;
+		boolean condition1 = (GlobalData.new_SpeedLimit < 11);
+		boolean condition2 = (GlobalData.new_VehicleSpeed > GlobalData.new_SpeedLimit);
+		outOfRoad = (condition1&condition2);
+		return outOfRoad;
+	}
 	
 	//*********************************************
 	public static boolean isStopSignalDetected() {
