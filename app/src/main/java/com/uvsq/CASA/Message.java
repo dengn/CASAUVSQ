@@ -6,7 +6,7 @@ import java.util.Comparator;
 /**
  * Created by etudiant on 31/08/2015.
  */
-public class Message {
+public class Message implements Comparable<Message>{
 
     private String[] value = new String[12];
 	/*
@@ -193,20 +193,12 @@ public class Message {
         return Arrays.toString(value);
     }
 
-    //**************************************************************************************
-    public static Comparator<Message> messageTypeComparator = new Comparator<Message>(){
-        public int compare (Message message1, Message message2) {
-            String m1 = message1.getMessageLevel().toUpperCase();
-            String m2 = message2.getMessageLevel().toUpperCase();
-            int result = m1.compareTo(m2);
-            if (result == 0) {//if the same
-                String score1 = message1.getMessageLevelForce();
-                String score2 = message2.getMessageLevelForce();
-                result = score2.compareTo(score1);
-            }
-            return result;
-        };
-    };//end method
+    @Override
+    public int compareTo(Message another) {
+        int localLevel = Integer.parseInt(value[1]);
+        int outsideLevel = Integer.parseInt(another.getMessageLevelForce());
+        return outsideLevel-localLevel;
+    }
 
 
 
