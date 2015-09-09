@@ -8,6 +8,8 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by etudiant on 06/08/2015.
  */
+
+//For test use
 public abstract class UVSQBaseActivity extends Activity {
 
     UVSQMessageListener uvsqMessageListener;

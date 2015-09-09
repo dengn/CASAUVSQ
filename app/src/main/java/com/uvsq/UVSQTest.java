@@ -32,7 +32,7 @@ public class UVSQTest<E> {
             "CASA.UVSQ.DrivingScore", "CASA.UVSQ.Image",
             "CASA.UVSQ.ActiveLampsRearFog", "CASA.UVSQ.ActiveLampsRearFog",
             "CASA.UVSQ.ActiveAirConditioning", "CASA.UVSQ.ActiveAirRecycling",
-            "CASA.UVSQ.EngineStatus"};
+            "CASA.UVSQ.EngineStatus","CASA.UVSQ.RemoveFoot.SpeedLimit"};
     //private static String[] value = { "", "", "", "", "", "", "", "", "", "", "", "" };
     private static Message myMessage = new Message();
     private static boolean arretStopBool = false;
@@ -53,6 +53,7 @@ public class UVSQTest<E> {
     private boolean vehicularObstacleSecurityDistanceDetected = false;
     private boolean pedestrianSecurityDistanceDetected = false;
     private boolean driverDisturbuanceDetected = false;
+    private boolean co2Detected = false;
 
 
     private ArrayList<Message> messages = new ArrayList<>();
@@ -146,7 +147,7 @@ public class UVSQTest<E> {
             bundle.putString(table[9], myMessage.getActiveAirConditioningStatus());
             bundle.putString(table[10], myMessage.getActiveAirRecyclingStatus());
             bundle.putString(table[11], myMessage.getEngineStatus());
-
+            bundle.putString(table[12], myMessage.getRemoveFootSpeedLimit());
             setSignals(getNSet, bundle);
         }//end try
         catch (Exception e) {
@@ -170,6 +171,7 @@ public class UVSQTest<E> {
         myMessage.setActiveAirConditioning("FALSE");
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
+        myMessage.setRemoveFootSpeedLimit("255");
 
         //For UVSQ Activity Test Use
         EventBus.getDefault().post(new MessageEvent(myMessage.getMessageValue()));
@@ -251,6 +253,7 @@ public class UVSQTest<E> {
         myMessage.setActiveAirConditioning("FALSE");
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
+        myMessage.setRemoveFootSpeedLimit("255");
         Historique.nombre_infractionSurvitesse++;
 
         //For UVSQ Activity Test Use
@@ -289,6 +292,7 @@ public class UVSQTest<E> {
         myMessage.setActiveAirConditioning("FALSE");
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
+        myMessage.setRemoveFootSpeedLimit("255");
         Historique.nombre_infractionSurvitesse++;
 
         //For UVSQ Activity Test Use
@@ -322,6 +326,7 @@ public class UVSQTest<E> {
         myMessage.setActiveAirConditioning("FALSE");
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
+        myMessage.setRemoveFootSpeedLimit("255");
         Historique.nombre_infractionSurvitesse++;
 
         //For UVSQ Activity Test Use
@@ -369,7 +374,7 @@ public class UVSQTest<E> {
         myMessage.setActiveAirConditioning("FALSE");
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
-
+        myMessage.setRemoveFootSpeedLimit("255");
         //For UVSQ Activity Test Use
         EventBus.getDefault().post(new MessageEvent(myMessage.getMessageValue()));
 
@@ -408,7 +413,7 @@ public class UVSQTest<E> {
         myMessage.setActiveAirConditioning("FALSE");
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
-
+        myMessage.setRemoveFootSpeedLimit("255");
         //For UVSQ Activity Test Use
         EventBus.getDefault().post(new MessageEvent(myMessage.getMessageValue()));
 
@@ -453,6 +458,7 @@ public class UVSQTest<E> {
         myMessage.setActiveAirConditioning("FALSE");
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
+        myMessage.setRemoveFootSpeedLimit("255");
         Historique.nombre_Oubli_clignoter_gauche++;
 
         //For UVSQ Activity Test Use
@@ -479,6 +485,7 @@ public class UVSQTest<E> {
         myMessage.setActiveAirConditioning("FALSE");
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
+        myMessage.setRemoveFootSpeedLimit("255");
         Historique.nombre_Oubli_clignoter_droite++;
 
         //For UVSQ Activity Test Use
@@ -524,7 +531,7 @@ public class UVSQTest<E> {
         myMessage.setActiveAirConditioning("FALSE");
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
-
+        myMessage.setRemoveFootSpeedLimit("255");
         fogLightFlag = true;
 
         //For UVSQ Activity Test Use
@@ -585,7 +592,7 @@ public class UVSQTest<E> {
         myMessage.setActiveAirConditioning("FALSE");
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
-
+        myMessage.setRemoveFootSpeedLimit("255");
         fogLightFlag = false;
 
         //For UVSQ Activity Test Use
@@ -624,7 +631,7 @@ public class UVSQTest<E> {
         myMessage.setActiveAirConditioning("FALSE");
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
-
+        myMessage.setRemoveFootSpeedLimit("255");
         //For UVSQ Activity Test Use
         EventBus.getDefault().post(new MessageEvent(myMessage.getMessageValue()));
 
@@ -663,7 +670,7 @@ public class UVSQTest<E> {
         myMessage.setActiveAirConditioning("FALSE");
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
-
+        myMessage.setRemoveFootSpeedLimit("255");
         //For UVSQ Activity Test Use
         EventBus.getDefault().post(new MessageEvent(myMessage.getMessageValue()));
 
@@ -700,7 +707,7 @@ public class UVSQTest<E> {
         myMessage.setActiveAirConditioning("FALSE");
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
-
+        myMessage.setRemoveFootSpeedLimit("255");
         Historique.nombre_Oubli_arreter_au_PassagePieton++;
 
         //For UVSQ Activity Test Use
@@ -738,6 +745,7 @@ public class UVSQTest<E> {
         myMessage.setActiveAirConditioning("FALSE");
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
+        myMessage.setRemoveFootSpeedLimit("255");
         //For UVSQ Activity Test Use
         EventBus.getDefault().post(new MessageEvent(myMessage.getMessageValue()));
 
@@ -758,18 +766,73 @@ public class UVSQTest<E> {
 
     }//end method
 
-
-    private void processIMATIASignal(GetNSet<E> getNSet) {
+    private void detectCO2(GetNSet<E> getNSet){
         String incitation = getSignals(getNSet, "CASA.IMATIA.RemoveFoot.Incitation");
-        Bundle inputIncitation = new Bundle();
-        inputIncitation.putString("CASA.UVSQ.RemoveFoot.Incitation", incitation);
-        setSignals(getNSet, inputIncitation);
-
-        String explicitSpeedLimit = getSignals(getNSet, "CASA.IMATIA.RemoveFoot.ExplicitSpeedLimit");
-        Bundle inputExplicitSpeedLimit = new Bundle();
-        inputExplicitSpeedLimit.putString("CASA.UVSQ.RemoveFoot.ExplicitSpeedLimit", explicitSpeedLimit);
-        setSignals(getNSet, inputExplicitSpeedLimit);
+        if(incitation.equals("1")){
+            co2Detected = true;
+            processCO2Message(getNSet);
+        }
+        else{
+            co2Detected = false;
+        }
     }
+
+    private void processCO2Message(GetNSet<E> getNSet){
+        String explicitSpeedLimit = getSignals(getNSet, "CASA.IMATIA.RemoveFoot.ExplicitSpeedLimit");
+
+        myMessage = new Message();
+        myMessage.setMessageLevel("Notification");
+        myMessage.setMessageLevelForce("7");
+        myMessage.setMessageCategory("RemoveFoot");
+        myMessage.setMessageValue("");
+        myMessage.setMessageQuestion("TRUE");
+        myMessage.setDrivingScore(Integer.toString(--GlobalData.drivingScore));
+        myMessage.setMessageImage("RemoveFoot");
+        myMessage.setActiveLampsRearFog("FALSE");
+        myMessage.setActiveLampsRearFog2("FALSE");
+        myMessage.setActiveAirConditioning("FALSE");
+        myMessage.setActiveAirRecycling("FALSE");
+        myMessage.setEngineStatus("ON");
+        myMessage.setRemoveFootSpeedLimit(explicitSpeedLimit);
+        //For UVSQ Activity Test Use
+        EventBus.getDefault().post(new MessageEvent(myMessage.getMessageValue()));
+
+        //Add message to priority list
+        messages.add(myMessage);
+
+    }
+
+//    //Notification: level: 7
+//    private void processIMATIASignal(GetNSet<E> getNSet) {
+//        String incitation = getSignals(getNSet, "CASA.IMATIA.RemoveFoot.Incitation");
+////        Bundle inputIncitation = new Bundle();
+////        inputIncitation.putString("CASA.UVSQ.RemoveFoot.Incitation", incitation);
+////        setSignals(getNSet, inputIncitation);
+//
+//        String explicitSpeedLimit = getSignals(getNSet, "CASA.IMATIA.RemoveFoot.ExplicitSpeedLimit");
+////        Bundle inputExplicitSpeedLimit = new Bundle();
+////        inputExplicitSpeedLimit.putString("CASA.UVSQ.RemoveFoot.ExplicitSpeedLimit", explicitSpeedLimit);
+////        setSignals(getNSet, inputExplicitSpeedLimit);
+//
+//
+//        myMessage.setMessageLevel("Notification");
+//        myMessage.setMessageLevelForce("5");
+//        myMessage.setMessageCategory("RemoveFoot");
+//        myMessage.setMessageValue("");
+//        myMessage.setMessageQuestion("TRUE");
+//        myMessage.setDrivingScore(Integer.toString(--GlobalData.drivingScore));
+//        myMessage.setMessageImage("RemoveFoot");
+//        myMessage.setActiveLampsRearFog("FALSE");
+//        myMessage.setActiveLampsRearFog2("FALSE");
+//        myMessage.setActiveAirConditioning("FALSE");
+//        myMessage.setActiveAirRecycling("FALSE");
+//        myMessage.setEngineStatus("ON");
+//        myMessage.setRemoveFootSpeedLimit(explicitSpeedLimit);
+//
+//        EventBus.getDefault().post(new MessageEvent(myMessage.getMessageValue()));
+//
+//        messages.add(myMessage);
+//    }
 
     //***********************************************
     private void executeTopPriorityMessage(GetNSet<E> getNSet) {
@@ -803,14 +866,15 @@ public class UVSQTest<E> {
         detectVehicularObstacleSecurityDistance();
         detectPedestrianSecurityDistance();
         detectDriverDisturbance();
+        detectCO2(getNSet);
 
         //Send the most important message
         executeTopPriorityMessage(getNSet);
 
-        processIMATIASignal(getNSet);
+
 
         //When there is no rules detected, we send empty message
-        if (!(overSpeedingDetected || stopDetected || stoppingAtStopDetected || turingDirectionIndicatorDetected || foggyZoneDetected || vehicleSpeedInFoggyZoneDetected || exitFoggyZoneDetected || vehicularObstacleSecurityDistanceDetected || pedestrianSecurityDistanceDetected || driverDisturbuanceDetected)) {
+        if (!(overSpeedingDetected || stopDetected || stoppingAtStopDetected || turingDirectionIndicatorDetected || foggyZoneDetected || vehicleSpeedInFoggyZoneDetected || exitFoggyZoneDetected || vehicularObstacleSecurityDistanceDetected || pedestrianSecurityDistanceDetected || driverDisturbuanceDetected || co2Detected)) {
             try {
                 Thread.currentThread().sleep(1800);
             } catch (Exception e) {

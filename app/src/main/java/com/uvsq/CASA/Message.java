@@ -8,7 +8,7 @@ import java.util.Comparator;
  */
 public class Message implements Comparable<Message>{
 
-    private String[] value = new String[12];
+    private String[] value = new String[13];
 	/*
 	 *  index no. and parameter association
 	 *  "0- CASA.UVSQ.Message.level",
@@ -22,7 +22,8 @@ public class Message implements Comparable<Message>{
 		"8 - CASA.UVSQ.ActiveLampsRearFog",
 		"9 - CASA.UVSQ.ActiveAirConditioning",
 		"10 - CASA.UVSQ.ActiveAirRecycling",
-		"11 - CASA.UVSQ.EngineStatus" };
+		"11 - CASA.UVSQ.EngineStatus"
+		"12 - CASA.UVSQ.RemoveFoot.SpeedLimit"};
 	 */
 
 
@@ -171,6 +172,10 @@ public class Message implements Comparable<Message>{
         return value[11];
     }//end method
 
+    public void setRemoveFootSpeedLimit(String removeFootSpeedLimit) { value[12] = removeFootSpeedLimit;}
+
+    public String getRemoveFootSpeedLimit() { return value[12];}
+
     //**************************
     public void printMessage() {
         System.out.println("CASA.UVSQ.Message.level: " + getMessageLevel());
@@ -185,7 +190,7 @@ public class Message implements Comparable<Message>{
         System.out.println("CASA.UVSQ.ActiveAirConditioning: " + getActiveAirConditioningStatus());
         System.out.println("CASA.UVSQ.ActiveAirRecycling: " + getActiveAirRecyclingStatus());
         System.out.println("CASA.UVSQ.EngineStatus: " + getEngineStatus());
-
+        System.out.println("CASA.UVSQ.RemoveFoot.SpeedLimit: "+getRemoveFootSpeedLimit());
     }//end method
 
     @Override
