@@ -191,6 +191,15 @@ public class UVSQTest<E> {
         GlobalData.presentDirection = 0;
         GlobalData.previousDirection = 0;
 
+        try {// get message
+            String data = "CASA.UVSQ.ActiveLampsLowBeamOn";
+
+            Bundle bundle = new Bundle();
+            bundle.putString(data, "0");
+            setSignals(getNSet, bundle);
+        }
+        catch (Exception e) {}
+
         sendMessageToServer(getNSet);
     }// end method
 
@@ -516,14 +525,14 @@ public class UVSQTest<E> {
 
 
     //**************************************
-    private void processFogMessage() {
+    private void processFogMessage(GetNSet<E> getNSet) {
 
         myMessage = new Message();
         myMessage.setMessageLevel("Alert");
         myMessage.setMessageLevelForce("8");
         myMessage.setMessageCategory("Danger");
-        myMessage.setMessageValue("Low visibility. Do you want to activate fog lights ?");
-        myMessage.setMessageQuestion("TRUE");
+        myMessage.setMessageValue("Low visibility. Activate fog lights.");
+        myMessage.setMessageQuestion("FALSE");
         myMessage.setDrivingScore(Integer.toString(GlobalData.drivingScore));
         myMessage.setMessageImage("Behavior");
         myMessage.setActiveLampsRearFog("FALSE");
@@ -533,6 +542,14 @@ public class UVSQTest<E> {
         myMessage.setEngineStatus("ON");
         myMessage.setRemoveFootSpeedLimit("255");
         fogLightFlag = true;
+
+        try {// get message
+            String data = "CASA.UVSQ.ActiveLampsLowBeamOn";
+            Bundle bundle = new Bundle();
+            bundle.putString(data, "2");
+            setSignals(getNSet, bundle);
+        }
+        catch (Exception e) {}
 
         //For UVSQ Activity Test Use
         EventBus.getDefault().post(new MessageEvent(myMessage.getMessageValue()));
@@ -545,9 +562,9 @@ public class UVSQTest<E> {
 
 
     //***********************************
-    private void detectFoggyZone() {
+    private void detectFoggyZone(GetNSet<E> getNSet) {
         if ((EventCondition.isStartOfFoggyZone()) && (!fogLightFlag)) {
-            processFogMessage();
+            processFogMessage(getNSet);
             foggyZoneDetected = true;
         } else {
             foggyZoneDetected = false;
@@ -577,7 +594,7 @@ public class UVSQTest<E> {
 
 
     //******************************************
-    private void processExitFoggyZone() {
+    private void processExitFoggyZone(GetNSet<E> getNSet) {
 
         myMessage = new Message();
         myMessage.setMessageLevel("Notification");
@@ -595,6 +612,16 @@ public class UVSQTest<E> {
         myMessage.setRemoveFootSpeedLimit("255");
         fogLightFlag = false;
 
+
+        try {// get message
+            String data = "CASA.UVSQ.ActiveLampsLowBeamOn";
+
+            Bundle bundle = new Bundle();
+            bundle.putString(data, "0");
+            setSignals(getNSet, bundle);
+        }
+        catch (Exception e) {}
+
         //For UVSQ Activity Test Use
         EventBus.getDefault().post(new MessageEvent(myMessage.getMessageValue()));
 
@@ -605,9 +632,9 @@ public class UVSQTest<E> {
 
 
     //*****************************************
-    private void detectExitFoggyZone() {
+    private void detectExitFoggyZone(GetNSet<E> getNSet) {
         if ((EventCondition.isleavingFoggyZone())) {
-            processExitFoggyZone();
+            processExitFoggyZone(getNSet);
             exitFoggyZoneDetected = true;
         } else {
             exitFoggyZoneDetected = false;
@@ -779,21 +806,22 @@ public class UVSQTest<E> {
 
     private void processCO2Message(GetNSet<E> getNSet){
         String explicitSpeedLimit = getSignals(getNSet, "CASA.IMATIA.RemoveFoot.ExplicitSpeedLimit");
+        String sendSpeepdLimit = String.valueOf((int)Double.parseDouble(explicitSpeedLimit));
 
         myMessage = new Message();
         myMessage.setMessageLevel("Notification");
         myMessage.setMessageLevelForce("7");
         myMessage.setMessageCategory("RemoveFoot");
         myMessage.setMessageValue("");
-        myMessage.setMessageQuestion("TRUE");
-        myMessage.setDrivingScore(Integer.toString(--GlobalData.drivingScore));
+        myMessage.setMessageQuestion("FALSE");
+        myMessage.setDrivingScore(Integer.toString(GlobalData.drivingScore));
         myMessage.setMessageImage("RemoveFoot");
         myMessage.setActiveLampsRearFog("FALSE");
         myMessage.setActiveLampsRearFog2("FALSE");
         myMessage.setActiveAirConditioning("FALSE");
         myMessage.setActiveAirRecycling("FALSE");
         myMessage.setEngineStatus("ON");
-        myMessage.setRemoveFootSpeedLimit(explicitSpeedLimit);
+        myMessage.setRemoveFootSpeedLimit(sendSpeepdLimit);
         //For UVSQ Activity Test Use
         EventBus.getDefault().post(new MessageEvent(myMessage.getMessageValue()));
 
@@ -801,38 +829,7 @@ public class UVSQTest<E> {
         messages.add(myMessage);
 
     }
-
-//    //Notification: level: 7
-//    private void processIMATIASignal(GetNSet<E> getNSet) {
-//        String incitation = getSignals(getNSet, "CASA.IMATIA.RemoveFoot.Incitation");
-////        Bundle inputIncitation = new Bundle();
-////        inputIncitation.putString("CASA.UVSQ.RemoveFoot.Incitation", incitation);
-////        setSignals(getNSet, inputIncitation);
-//
-//        String explicitSpeedLimit = getSignals(getNSet, "CASA.IMATIA.RemoveFoot.ExplicitSpeedLimit");
-////        Bundle inputExplicitSpeedLimit = new Bundle();
-////        inputExplicitSpeedLimit.putString("CASA.UVSQ.RemoveFoot.ExplicitSpeedLimit", explicitSpeedLimit);
-////        setSignals(getNSet, inputExplicitSpeedLimit);
-//
-//
-//        myMessage.setMessageLevel("Notification");
-//        myMessage.setMessageLevelForce("5");
-//        myMessage.setMessageCategory("RemoveFoot");
-//        myMessage.setMessageValue("");
-//        myMessage.setMessageQuestion("TRUE");
-//        myMessage.setDrivingScore(Integer.toString(--GlobalData.drivingScore));
-//        myMessage.setMessageImage("RemoveFoot");
-//        myMessage.setActiveLampsRearFog("FALSE");
-//        myMessage.setActiveLampsRearFog2("FALSE");
-//        myMessage.setActiveAirConditioning("FALSE");
-//        myMessage.setActiveAirRecycling("FALSE");
-//        myMessage.setEngineStatus("ON");
-//        myMessage.setRemoveFootSpeedLimit(explicitSpeedLimit);
-//
-//        EventBus.getDefault().post(new MessageEvent(myMessage.getMessageValue()));
-//
-//        messages.add(myMessage);
-//    }
+    
 
     //***********************************************
     private void executeTopPriorityMessage(GetNSet<E> getNSet) {
@@ -856,16 +853,16 @@ public class UVSQTest<E> {
 
     //*********************************
     private void selectEvent(GetNSet<E> getNSet) {
-        detectOverspeeding();
-        detectStop();
-        detectStoppingAtStop();
-        detectTurningDirectionIndicator();
-        detectFoggyZone();
-        detectVehicleSpeedInFoggyZone();
-        detectExitFoggyZone();
-        detectVehicularObstacleSecurityDistance();
-        detectPedestrianSecurityDistance();
-        detectDriverDisturbance();
+//        detectOverspeeding();
+//        detectStop();
+//        detectStoppingAtStop();
+//        detectTurningDirectionIndicator();
+//        detectFoggyZone(getNSet);
+//        detectVehicleSpeedInFoggyZone();
+//        detectExitFoggyZone(getNSet);
+//        detectVehicularObstacleSecurityDistance();
+//        detectPedestrianSecurityDistance();
+//        detectDriverDisturbance();
         detectCO2(getNSet);
 
         //Send the most important message
