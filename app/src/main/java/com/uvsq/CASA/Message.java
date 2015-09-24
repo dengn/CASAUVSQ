@@ -200,9 +200,29 @@ public class Message implements Comparable<Message>{
 
     @Override
     public int compareTo(Message another) {
-        int localLevel = Integer.parseInt(value[1]);
-        int outsideLevel = Integer.parseInt(another.getMessageLevelForce());
-        return outsideLevel-localLevel;
+        int localLevel = 0;
+        int outsideLevel = 0;
+
+        if(value[0].equals("Alert")){
+            localLevel = 1;
+        }
+        if(another.getMessageLevel().equals("Alert")){
+            outsideLevel = 1;
+        }
+
+        //Alert is more prior than Notification
+        if(outsideLevel>localLevel){
+            return outsideLevel - localLevel;
+        }
+        else if(outsideLevel < localLevel){
+            return outsideLevel - localLevel;
+        }
+        else {
+
+            int localLevelForce = Integer.parseInt(value[1]);
+            int outsideLevelForce = Integer.parseInt(another.getMessageLevelForce());
+            return outsideLevelForce - localLevelForce;
+        }
     }
 
 

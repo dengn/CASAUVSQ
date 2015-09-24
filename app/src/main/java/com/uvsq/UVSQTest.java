@@ -853,16 +853,16 @@ public class UVSQTest<E> {
 
     //*********************************
     private void selectEvent(GetNSet<E> getNSet) {
-//        detectOverspeeding();
-//        detectStop();
-//        detectStoppingAtStop();
-//        detectTurningDirectionIndicator();
-//        detectFoggyZone(getNSet);
-//        detectVehicleSpeedInFoggyZone();
-//        detectExitFoggyZone(getNSet);
-//        detectVehicularObstacleSecurityDistance();
-//        detectPedestrianSecurityDistance();
-//        detectDriverDisturbance();
+        detectOverspeeding();
+        detectStop();
+        detectStoppingAtStop();
+        detectTurningDirectionIndicator();
+        detectFoggyZone(getNSet);
+        detectVehicleSpeedInFoggyZone();
+        detectExitFoggyZone(getNSet);
+        detectVehicularObstacleSecurityDistance();
+        detectPedestrianSecurityDistance();
+        detectDriverDisturbance();
         detectCO2(getNSet);
 
         //Send the most important message
