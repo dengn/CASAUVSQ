@@ -32,7 +32,7 @@ public class UVSQTest<E> {
             "CASA.UVSQ.DrivingScore", "CASA.UVSQ.Image",
             "CASA.UVSQ.ActiveLampsRearFog", "CASA.UVSQ.ActiveLampsRearFog",
             "CASA.UVSQ.ActiveAirConditioning", "CASA.UVSQ.ActiveAirRecycling",
-            "CASA.UVSQ.EngineStatus","CASA.UVSQ.RemoveFoot.SpeedLimit"};
+            "CASA.UVSQ.EngineStatus", "CASA.UVSQ.RemoveFoot.SpeedLimit"};
     //private static String[] value = { "", "", "", "", "", "", "", "", "", "", "", "" };
     private static Message myMessage = new Message();
     private static boolean arretStopBool = false;
@@ -197,8 +197,8 @@ public class UVSQTest<E> {
             Bundle bundle = new Bundle();
             bundle.putString(data, "0");
             setSignals(getNSet, bundle);
+        } catch (Exception e) {
         }
-        catch (Exception e) {}
 
         sendMessageToServer(getNSet);
     }// end method
@@ -531,10 +531,10 @@ public class UVSQTest<E> {
         myMessage.setMessageLevel("Alert");
         myMessage.setMessageLevelForce("8");
         myMessage.setMessageCategory("Danger");
-        myMessage.setMessageValue("Low visibility. Activate fog lights.");
+        myMessage.setMessageValue("Low visibility. Fog lights activated.");
         myMessage.setMessageQuestion("FALSE");
         myMessage.setDrivingScore(Integer.toString(GlobalData.drivingScore));
-        myMessage.setMessageImage("Behavior");
+        myMessage.setMessageImage("Danger");
         myMessage.setActiveLampsRearFog("FALSE");
         myMessage.setActiveLampsRearFog2("FALSE");
         myMessage.setActiveAirConditioning("FALSE");
@@ -548,8 +548,8 @@ public class UVSQTest<E> {
             Bundle bundle = new Bundle();
             bundle.putString(data, "2");
             setSignals(getNSet, bundle);
+        } catch (Exception e) {
         }
-        catch (Exception e) {}
 
         //For UVSQ Activity Test Use
         EventBus.getDefault().post(new MessageEvent(myMessage.getMessageValue()));
@@ -619,8 +619,8 @@ public class UVSQTest<E> {
             Bundle bundle = new Bundle();
             bundle.putString(data, "0");
             setSignals(getNSet, bundle);
+        } catch (Exception e) {
         }
-        catch (Exception e) {}
 
         //For UVSQ Activity Test Use
         EventBus.getDefault().post(new MessageEvent(myMessage.getMessageValue()));
@@ -793,20 +793,20 @@ public class UVSQTest<E> {
 
     }//end method
 
-    private void detectCO2(GetNSet<E> getNSet){
+    private void detectCO2(GetNSet<E> getNSet) {
         String incitation = getSignals(getNSet, "CASA.IMATIA.RemoveFoot.Incitation");
-        if(incitation.equals("1")){
+        double accelerator = Double.parseDouble(getSignals(getNSet, "CASA.Nexyad.Accelerator"));
+        if (incitation.equals("1") && accelerator > 0.001) {
             co2Detected = true;
             processCO2Message(getNSet);
-        }
-        else{
+        } else {
             co2Detected = false;
         }
     }
 
-    private void processCO2Message(GetNSet<E> getNSet){
+    private void processCO2Message(GetNSet<E> getNSet) {
         String explicitSpeedLimit = getSignals(getNSet, "CASA.IMATIA.RemoveFoot.ExplicitSpeedLimit");
-        String sendSpeepdLimit = String.valueOf((int)Double.parseDouble(explicitSpeedLimit));
+        String sendSpeepdLimit = String.valueOf((int) Double.parseDouble(explicitSpeedLimit));
 
         myMessage = new Message();
         myMessage.setMessageLevel("Notification");
@@ -829,7 +829,7 @@ public class UVSQTest<E> {
         messages.add(myMessage);
 
     }
-    
+
 
     //***********************************************
     private void executeTopPriorityMessage(GetNSet<E> getNSet) {
@@ -846,9 +846,16 @@ public class UVSQTest<E> {
             sendMessageToServer(getNSet);
             messages.clear();
 
+            try {
+                Thread.currentThread().sleep(1800);
+            } catch (Exception e) {
+            }
+
         }//end if
 
         messages.clear();              //clear the arrayList
+
+
     }//end method
 
     //*********************************
@@ -869,13 +876,8 @@ public class UVSQTest<E> {
         executeTopPriorityMessage(getNSet);
 
 
-
         //When there is no rules detected, we send empty message
         if (!(overSpeedingDetected || stopDetected || stoppingAtStopDetected || turingDirectionIndicatorDetected || foggyZoneDetected || vehicleSpeedInFoggyZoneDetected || exitFoggyZoneDetected || vehicularObstacleSecurityDistanceDetected || pedestrianSecurityDistanceDetected || driverDisturbuanceDetected || co2Detected)) {
-            try {
-                Thread.currentThread().sleep(1800);
-            } catch (Exception e) {
-            }
             processEmptyMessage(getNSet);
         }
     }//end method
