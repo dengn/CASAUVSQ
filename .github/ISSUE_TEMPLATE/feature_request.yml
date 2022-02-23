@@ -1,9 +1,9 @@
 name: Feature request
 description: Suggest an idea for MatrixOne
-title: "[Feature Reques]: "
+title: "[Feature Request]: "
 labels: [kind/feature, needs-triage]
 assignees:
-  - m-schen
+  - dengn
 body:
   - type: checkboxes
     attributes:
