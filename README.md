@@ -26,7 +26,7 @@
         <a href="https://github.com/dengn">
             <img src="https://avatars.githubusercontent.com/u/4965857?v=4" width="100;" alt="dengn"/>
             <br />
-            <sub><b>dengn</b></sub>
+            <sub><b>Dengn</b></sub>
         </a>
     </td></tr>
 </table>
