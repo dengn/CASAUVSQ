@@ -1,5 +1,7 @@
 name: Contributor List
 on:
+  schedule:
+    - cron:  '* * * * *'
   push:
     branches:
       - priority
