@@ -1,4 +1,4 @@
-<!-- DO NOT REMOVE - contributor_list:data:start:["dengn"]:end -->
+<!-- DO NOT REMOVE - contributor_list:data:start:["dengn", "github-actions[bot]"]:end -->
 # CASAUVSQ
 
 
@@ -13,7 +13,9 @@
 ### 👥 Contributors
 
 
-- **[@dengn](https://github.com/dengn)** (34 contributions)
+- **[@dengn](https://github.com/dengn)** (39 contributions)
+
+- **[@github-actions[bot]](https://github.com/apps/github-actions)** (2 contributions)
 
 <!-- DO NOT REMOVE - contributor_list:end -->
 <!-- prettier-ignore-end -->
