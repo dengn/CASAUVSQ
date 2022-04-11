@@ -1,0 +1,21 @@
+- name: List Contributors
+  # You may pin to the exact commit or the version.
+  # uses: Maanuj-Vora/List-Contributors@a75d96f42a7e2faf326e34fa295ff4c7c1ba8bfe
+  uses: Maanuj-Vora/List-Contributors@1.0.3
+  with:
+    # The name of the repo: user/repo_name
+    REPO_NAME: 
+    # Where you want to add contributors
+    CONTRIBUTOR: 
+    # Number of contributors per row
+    COLUMN_PER_ROW: # optional, default is 6
+    # Github Access Token you want to use. Just pass GITHUB_TOKEN
+    ACCESS_TOKEN: 
+    # Width of img
+    IMG_WIDTH: # optional, default is 100
+    # Font size of name
+    FONT_SIZE: # optional, default is 14
+    # Path to the file
+    FILEPATH: # optional, default is /README.md
+    # Commit message
+    COMMIT_MESSAGE: # optional, default is Contributed to Contributer
