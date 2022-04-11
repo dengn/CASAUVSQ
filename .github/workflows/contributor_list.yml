@@ -2,7 +2,7 @@ name: Contributor List
 on:
   push:
     branches:
-      - master
+      - priority
 jobs:
   contributor_list:
     name: Contributor List
@@ -10,3 +10,12 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - uses: docker://cjdenio/contributor_list:latest
+        with:
+          commit_message: 📝 Update contributors list
+          # Max number of contributors to display on the README
+          max_contributors: 5 # Default: 10
+          # This enables showing contribution numbers on the README.
+          # ⚠️ THIS WILL PUSH TO THE REPO AFTER EVERY COMMIT ⚠️
+          show_numbers: true # Default: false
+          # Markdown heading level for the contributors section
+          header_level: 3 # Default: 2
